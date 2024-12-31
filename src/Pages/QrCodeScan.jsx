@@ -1,5 +1,5 @@
 // src/Pages/QrCodeScan.jsx
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import QrReader from 'react-qr-scanner'; // Correct import
 import { Container, Typography, Card, CardContent, Button,Box } from '@mui/material';
 

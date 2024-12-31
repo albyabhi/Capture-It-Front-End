@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import  { useState, useRef } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress, Snackbar } from '@mui/material';
 import axios from 'axios';
 import ReactQR from 'react-qr-code';
