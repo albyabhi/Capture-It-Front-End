@@ -63,13 +63,14 @@ const Capture = () => {
 
       {/* Hidden file input */}
       <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageCapture}
-        style={{ display: 'none' }}  // Hide the input button
-        ref={fileInputRef}
-        multiple  // Allows multiple image selection
-      />
+  type="file"
+  accept="image/*"
+  onChange={handleImageCapture}
+  style={{ display: 'none' }}  // Hide the input button
+  ref={fileInputRef}
+  multiple
+  webkitdirectory
+/>
 
       {/* Display the captured images */}
       {photos.length > 0 && (
