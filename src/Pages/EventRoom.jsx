@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography, CircularProgress } from '@mui/material';
+import Capture from '../Components/Capture';
 
 const EventRoom = () => {
   const { eventCode } = useParams();
@@ -92,7 +93,11 @@ const EventRoom = () => {
           No room data available
         </Typography>
       )}
+      <Box>
+         <Capture /> 
+      </Box>
     </Box>
+    
   );
 };
 

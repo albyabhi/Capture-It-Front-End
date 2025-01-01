@@ -1,7 +1,7 @@
-import  { useState, useRef } from 'react';
+import { useState } from 'react';
 import { TextField, Button, Box, Typography, CircularProgress, Snackbar } from '@mui/material';
 import axios from 'axios';
-import ReactQR from 'react-qr-code';
+import QRCode from 'qrcode';
 
 const CreateRoom = () => {
   const [eventName, setEventName] = useState('');
@@ -12,7 +12,7 @@ const CreateRoom = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [roomCode, setRoomCode] = useState(null);
-  const qrCodeRef = useRef(null);
+  const [qrCodeImage, setQrCodeImage] = useState(null);
 
   const handleCreateRoom = async () => {
     if (eventName.trim() === '' || ownerName.trim() === '') {
@@ -23,8 +23,10 @@ const CreateRoom = () => {
     setLoading(true);
     try {
       const response = await axios.post(`${apiUrl}/room/create`, { eventName, ownerName });
-      setRoomData(response.data.room);
-      setRoomCode(response.data.room.room_code);
+      const room = response.data.room;
+      setRoomData(room);
+      setRoomCode(room.room_code);
+      await generateQrCode(room.room_code);
       setSuccessMessage('Room created successfully!');
     } catch (error) {
       console.error('Error creating room:', error);
@@ -34,12 +36,19 @@ const CreateRoom = () => {
     }
   };
 
+  const generateQrCode = async (text) => {
+    try {
+      const qrImageUrl = await QRCode.toDataURL(text, { width: 512, margin: 2 }); // Increase the width for better resolution
+      setQrCodeImage(qrImageUrl);
+    } catch (error) {
+      console.error('QR Code generation failed:', error);
+    }
+  };
+
   const saveQRCode = () => {
-    const canvas = qrCodeRef.current.querySelector('canvas');
-    if (canvas) {
-      const imageUrl = canvas.toDataURL('image/png');
+    if (qrCodeImage) {
       const link = document.createElement('a');
-      link.href = imageUrl;
+      link.href = qrCodeImage;
       link.download = 'room-qr-code.png';
       link.click();
     } else {
@@ -48,7 +57,17 @@ const CreateRoom = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', backgroundColor: '#EFFFFD', padding: '16px' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#EFFFFD',
+        padding: '16px',
+      }}
+    >
       <Typography variant="h4" gutterBottom color="primary">
         Create Event Room
       </Typography>
@@ -102,9 +121,13 @@ const CreateRoom = () => {
           <Typography variant="h6" gutterBottom>
             Room Code: {roomCode}
           </Typography>
-          <div ref={qrCodeRef}>
-            <ReactQR value={roomCode} size={256} />
-          </div>
+          {qrCodeImage && (
+            <img
+              src={qrCodeImage}
+              alt="QR Code"
+              style={{ marginTop: '16px', width: '512px', height: '512px' }} // Adjust the size to match the resolution
+            />
+          )}
           <Box sx={{ marginTop: '16px' }}>
             <Button variant="contained" color="primary" onClick={saveQRCode}>
               Save QR
