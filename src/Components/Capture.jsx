@@ -1,15 +1,16 @@
-import {useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { Button, Box, Typography } from '@mui/material';
 
 const Capture = () => {
-  const [photo, setPhoto] = useState(null);
+  const [photos, setPhotos] = useState([]);
   const fileInputRef = useRef(null);
 
   // Handle image capture from camera or gallery
   const handleImageCapture = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setPhoto(imageUrl);  // Store the captured image URL for display
+    const files = e.target.files;
+    if (files) {
+      const fileUrls = Array.from(files).map(file => URL.createObjectURL(file));
+      setPhotos(prevPhotos => [...prevPhotos, ...fileUrls]);  // Store captured image URLs for display
     }
   };
 
@@ -21,18 +22,42 @@ const Capture = () => {
   };
 
   return (
-    <div>
-      <h2>Capture Photos</h2>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#EFFFFD',
+        padding: '16px',
+      }}
+    >
+      <Typography variant="h4" gutterBottom color="primary">
+        Capture Photos
+      </Typography>
 
       {/* Button to open the default camera */}
-      <button onClick={openCamera}>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        onClick={openCamera}
+        sx={{ marginBottom: '16px', maxWidth: '400px' }}
+      >
         Open Camera
-      </button>
+      </Button>
 
       {/* Button to open gallery */}
-      <button onClick={openCamera}>
+      <Button
+        variant="outlined"
+        color="primary"
+        fullWidth
+        onClick={openCamera}
+        sx={{ marginBottom: '16px', maxWidth: '400px' }}
+      >
         Open Gallery
-      </button>
+      </Button>
 
       {/* Hidden file input */}
       <input
@@ -42,16 +67,25 @@ const Capture = () => {
         onChange={handleImageCapture}
         style={{ display: 'none' }}  // Hide the input button
         ref={fileInputRef}
+        multiple  // Allows multiple image selection
       />
 
-      {/* Display the captured image */}
-      {photo && (
-        <div>
-          <h3>Captured Image</h3>
-          <img src={photo} alt="Captured" width="300" />
-        </div>
+      {/* Display the captured images */}
+      {photos.length > 0 && (
+        <Box sx={{ marginTop: '20px', width: '100%', maxWidth: '600px' }}>
+          <Typography variant="h6" color="secondary">
+            Captured Images
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {photos.map((photo, index) => (
+              <Box key={index} sx={{ margin: '10px' }}>
+                <img src={photo} alt={`Captured ${index + 1}`} width="150" />
+              </Box>
+            ))}
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
