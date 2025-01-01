@@ -65,7 +65,6 @@ const Capture = () => {
       <input
         type="file"
         accept="image/*"
-        capture="camera"  // Opens camera for capturing image
         onChange={handleImageCapture}
         style={{ display: 'none' }}  // Hide the input button
         ref={fileInputRef}
