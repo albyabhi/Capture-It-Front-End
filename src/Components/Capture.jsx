@@ -4,8 +4,9 @@ import { Button, Box, Typography } from '@mui/material';
 const Capture = () => {
   const [photos, setPhotos] = useState([]);
   const fileInputRef = useRef(null);
+  const fileSelectRef = useRef(null);  // Reference for the select input
 
-  // Handle image capture from camera or gallery
+  // Handle image capture from camera
   const handleImageCapture = (e) => {
     const files = e.target.files;
     if (files) {
@@ -14,10 +15,26 @@ const Capture = () => {
     }
   };
 
-  // Open camera or gallery when button is clicked
+  // Handle image selection from file input
+  const handleImageSelect = (e) => {
+    const files = e.target.files;
+    if (files) {
+      const fileUrls = Array.from(files).map(file => URL.createObjectURL(file));
+      setPhotos(prevPhotos => [...prevPhotos, ...fileUrls]);  // Store selected image URLs for display
+    }
+  };
+
+  // Open camera when button is clicked
   const openCamera = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();  // Trigger file input click
+    }
+  };
+
+  // Open file input for selecting images from file system
+  const openFileSelector = () => {
+    if (fileSelectRef.current) {
+      fileSelectRef.current.click();  // Trigger file selection click
     }
   };
 
@@ -32,7 +49,7 @@ const Capture = () => {
         gap: '16px',  // Added gap between elements
       }}
     >
-      {/* Button to open the default camera */}
+      {/* Button to open the camera */}
       <Button
         variant="contained"
         color="primary"
@@ -43,36 +60,39 @@ const Capture = () => {
         Open Camera
       </Button>
 
-      {/* Styled file input button */}
+      {/* Hidden file input for camera */}
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleImageCapture}
+        style={{ display: 'none' }}  // Hide the input button
+        ref={fileInputRef}
+        multiple
+        capture="camera"  // This will open the camera for image capture
+      />
+
+      {/* Button to open file selector */}
       <Button
         variant="contained"
-        color="primary"
+        color="secondary"
         fullWidth
-        onClick={() => fileInputRef.current.click()}  // Trigger file input click
-        sx={{
-          maxWidth: '400px',
-          height: '50px',
-          textTransform: 'none',  // Prevent uppercase text
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+        onClick={openFileSelector}
+        sx={{ maxWidth: '400px' }}
       >
-        Upload from Gallery
+        Select Images from Files
       </Button>
 
-      {/* Hidden file input */}
+      {/* Hidden file input for selecting images */}
       <input
-  type="file"
-  accept="image/*"
-  onChange={handleImageCapture}
-  style={{ display: 'none' }}  // Hide the input button
-  ref={fileInputRef}
-  multiple
-  webkitdirectory
-/>
+        type="file"
+        accept="image/*"
+        onChange={handleImageSelect}
+        style={{ display: 'none' }}  // Hide the input button
+        ref={fileSelectRef}
+        multiple  // Allow multiple files to be selected
+      />
 
-      {/* Display the captured images */}
+      {/* Display the captured or selected images */}
       {photos.length > 0 && (
         <Box sx={{ width: '100%', maxWidth: '600px' }}>
           <Typography variant="h6" color="secondary" sx={{ marginBottom: '16px' }}>
