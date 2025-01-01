@@ -3,6 +3,7 @@ import CreateRoom from './Pages/CreateRoom';
 import Home from './Pages/Home';
 import EventRoom from './Pages/EventRoom';
 import QrCodeScan from './Pages/QrCodeScan';
+import UserLogin from './Pages/UserLogin';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/QR-Scan" element={<QrCodeScan />} />
         <Route path="/event-room/:eventCode" element={<EventRoom />} />
+        <Route path="/user/:eventCode" element={<UserLogin />} />
       </Routes>
     </Router>
   );

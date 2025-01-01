@@ -20,7 +20,7 @@ const Home = () => {
 
       if (response.status === 200) {
         console.log('Room found:', data.room);
-        navigate(`/event-room/${eventCode}`);
+        navigate(`/user/${eventCode}`);
       } else {
         console.log('Room not found');
         alert('Room not found, please check the event code.');
