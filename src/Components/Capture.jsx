@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import {useRef, useState } from 'react';
 
 const Capture = () => {
   const [photo, setPhoto] = useState(null);
+  const fileInputRef = useRef(null);
 
   // Handle image capture from camera or gallery
   const handleImageCapture = (e) => {
@@ -12,32 +13,36 @@ const Capture = () => {
     }
   };
 
+  // Open camera or gallery when button is clicked
+  const openCamera = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();  // Trigger file input click
+    }
+  };
+
   return (
     <div>
       <h2>Capture Photos</h2>
 
       {/* Button to open the default camera */}
-      <button>
-        <input
-          type="file"
-          accept="image/*"
-          capture="camera"  // Opens camera for capturing image
-          onChange={handleImageCapture}
-          style={{ display: 'none' }}  // Hide the input button
-        />
+      <button onClick={openCamera}>
         Open Camera
       </button>
 
       {/* Button to open gallery */}
-      <button>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageCapture}  // Allow file selection from gallery
-          style={{ display: 'none' }}  // Hide the input button
-        />
+      <button onClick={openCamera}>
         Open Gallery
       </button>
+
+      {/* Hidden file input */}
+      <input
+        type="file"
+        accept="image/*"
+        capture="camera"  // Opens camera for capturing image
+        onChange={handleImageCapture}
+        style={{ display: 'none' }}  // Hide the input button
+        ref={fileInputRef}
+      />
 
       {/* Display the captured image */}
       {photo && (
