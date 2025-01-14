@@ -55,15 +55,20 @@ const UserLogin = () => {
   
         // Retrieve the token from the server response
         const token = result.token;
-        
+  
         // Log the token to the console
         console.log('JWT Token:', token);
-        
+  
         // Optionally store the token in localStorage or a state management system
-        // For example, to store it in localStorage:
         localStorage.setItem('authToken', token);
   
-        
+        // Save the eventCode to recent-rooms in localStorage
+        const recentRooms = JSON.parse(localStorage.getItem('recent-rooms')) || [];
+        if (!recentRooms.includes(eventCode)) {
+          recentRooms.push(eventCode);
+        }
+        localStorage.setItem('recent-rooms', JSON.stringify(recentRooms));
+  
         navigate(`/event-room/${eventCode}`);
       } else {
         alert('Failed to login. Please try again.');
@@ -73,6 +78,7 @@ const UserLogin = () => {
       alert('An error occurred during login.');
     }
   };
+  
 
   if (loading) {
     return (

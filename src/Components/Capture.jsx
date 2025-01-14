@@ -1,120 +1,104 @@
 import { useRef, useState } from 'react';
-import { Button, Box, Typography } from '@mui/material';
+import { Button, Box, Typography , Alert  } from '@mui/material';
+import axios from 'axios';
+import PropTypes from 'prop-types';
 
-const Capture = () => {
+const Capture = ({ eventCode }) => {
   const [photos, setPhotos] = useState([]);
   const fileInputRef = useRef(null);
-  const fileSelectRef = useRef(null);  // Reference for the select input
+  const [alertVisible, setAlertVisible] = useState(false);
+  const fileSelectRef = useRef(null);
+  const apiUrl = import.meta.env.VITE_BACKEND_URL;
+  const token = localStorage.getItem('authToken');
 
-  // Handle image capture from camera
-  const handleImageCapture = (e) => {
+  // Handle image capture or file selection
+  const handleImageChange = (e) => {
     const files = e.target.files;
     if (files) {
-      const fileUrls = Array.from(files).map(file => URL.createObjectURL(file));
-      setPhotos(prevPhotos => [...prevPhotos, ...fileUrls]);  // Store captured image URLs for display
-    }
-  };
-
-  // Handle image selection from file input
-  const handleImageSelect = (e) => {
-    const files = e.target.files;
-    if (files) {
-      const fileUrls = Array.from(files).map(file => URL.createObjectURL(file));
-      setPhotos(prevPhotos => [...prevPhotos, ...fileUrls]);  // Store selected image URLs for display
+      const newPhotos = Array.from(files).map((file) => ({
+        file,
+        name: file.name,
+        size: file.size,
+      }));
+      setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
     }
   };
 
   // Open camera when button is clicked
   const openCamera = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();  // Trigger file input click
-    }
+    fileInputRef.current?.click();
   };
 
-  // Open file input for selecting images from file system
+  // Open file input for selecting images
   const openFileSelector = () => {
-    if (fileSelectRef.current) {
-      fileSelectRef.current.click();  // Trigger file selection click
+    fileSelectRef.current?.click();
+  };
+
+  // Send images to backend
+  const sendImagesToBackend = async () => {
+    if (!photos.length) return; // Don't send empty form
+
+    const formData = new FormData();
+    photos.forEach((photo) => formData.append('images', photo.file));
+    formData.append('eventCode', eventCode);
+
+    try {
+      const response = await axios.post(`${apiUrl}/image/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      setPhotos([]);
+      console.log('Images uploaded:', response.data);
+
+      setAlertVisible(true);
+      setTimeout(() => {
+        setAlertVisible(false);
+      }, 3000);
+
+    } catch (error) {
+      console.error('Failed to upload images', error);
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-        gap: '16px',  // Added gap between elements
-      }}
-    >
-      {/* Button to open the camera */}
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        onClick={openCamera}
-        sx={{ maxWidth: '400px' }}
-      >
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px', gap: '16px' }}>
+      {alertVisible && <Alert severity="success" sx={{ position: 'absolute', top: 20, zIndex: 1, width: '30%' }}>Image saved!</Alert>}
+      <Button variant="contained" color="primary" fullWidth onClick={openCamera} sx={{ maxWidth: '400px' }}>
         Open Camera
       </Button>
+      <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} ref={fileInputRef} multiple capture="camera" />
 
-      {/* Hidden file input for camera */}
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageCapture}
-        style={{ display: 'none' }}  // Hide the input button
-        ref={fileInputRef}
-        multiple
-        capture="camera"  // This will open the camera for image capture
-      />
-
-      {/* Button to open file selector */}
-      <Button
-        variant="contained"
-        color="secondary"
-        fullWidth
-        onClick={openFileSelector}
-        sx={{ maxWidth: '400px' }}
-      >
+      <Button variant="contained" color="secondary" fullWidth onClick={openFileSelector} sx={{ maxWidth: '400px' }}>
         Select Images from Files
       </Button>
+      <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} ref={fileSelectRef} multiple />
 
-      {/* Hidden file input for selecting images */}
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageSelect}
-        style={{ display: 'none' }}  // Hide the input button
-        ref={fileSelectRef}
-        multiple  // Allow multiple files to be selected
-      />
-
-      {/* Display the captured or selected images */}
       {photos.length > 0 && (
         <Box sx={{ width: '100%', maxWidth: '600px' }}>
           <Typography variant="h6" color="secondary" sx={{ marginBottom: '16px' }}>
             Captured Images
           </Typography>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',  // Responsive grid layout
-              gap: '10px',  // Added gap between images
-            }}
-          >
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
             {photos.map((photo, index) => (
               <Box key={index} sx={{ width: '100%' }}>
-                <img src={photo} alt={`Captured ${index + 1}`} width="100%" style={{ borderRadius: '8px' }} />
+                <img src={URL.createObjectURL(photo.file)} alt={`Captured ${index + 1}`} width="100%" style={{ borderRadius: '8px' }} />
               </Box>
             ))}
           </Box>
         </Box>
       )}
+
+      <Button variant="contained" color="success" fullWidth onClick={sendImagesToBackend} sx={{ maxWidth: '400px' }}>
+        Send Images to Backend
+      </Button>
     </Box>
   );
+};
+
+Capture.propTypes = {
+  eventCode: PropTypes.string.isRequired,
 };
 
 export default Capture;

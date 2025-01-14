@@ -1,15 +1,18 @@
 // src/main.jsx
 import React from 'react';
-import ReactDOM from 'react-dom/client';  // Update import to 'react-dom/client'
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux'; // Import Provider for Redux
 import App from './App';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import store from './Store/store'; // Import Redux store
 
+// Define Material-UI theme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#42C2FF', // Primary color (tealbluecoldwinterlightsky)
+      main: '#42C2FF', // Primary color
       light: '#85F4FF', // Lighter shade
-      dark: '#42A2FF', // Darker shade (if needed)
+      dark: '#42A2FF', // Darker shade
       contrastText: '#FFFFFF', // Text color for buttons
     },
     secondary: {
@@ -28,7 +31,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: `'Urbanist', 'Arial', 'sans-serif'`, // Set Pacifico as the default font
+    fontFamily: `'Urbanist', 'Arial', 'sans-serif'`, // Default font
     h1: {
       fontSize: '2rem',
       fontWeight: 600,
@@ -49,8 +52,10 @@ const theme = createTheme({
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
+    <Provider store={store}> {/* Wrap App with Provider */}
+      <ThemeProvider theme={theme}>
+        <App />
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>
 );

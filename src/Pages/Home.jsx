@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { TextField, Button, Box, Typography, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Recent_Rooms from '../Components/Recent_Rooms';
 
 const Home = () => {
   const [eventCode, setEventCode] = useState('');
@@ -94,6 +95,8 @@ const Home = () => {
         >
           Create Event Room
         </Button>
+
+        <Recent_Rooms />
       </>
     </Box>
   );
