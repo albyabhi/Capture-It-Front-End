@@ -85,6 +85,7 @@ const CreateRoom = () => {
 
   const handleRoomNav = () => {
     const token = localStorage.getItem("authToken");
+    console.log(token);
 
     const recentRooms = JSON.parse(localStorage.getItem('recent-rooms')) || [];
     if (!recentRooms.includes(roomCode)) {
@@ -92,7 +93,7 @@ const CreateRoom = () => {
     }
     localStorage.setItem('recent-rooms', JSON.stringify(recentRooms));
 
-    if (!token) {
+    if (!token || token === '') {
       navigate(`/user/${roomCode}`);
     } else {
       navigate(`/event-room/${roomCode}`);

@@ -1,28 +1,33 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { setRoomData, setLoading, setError , setEventCode} from '../Store/roomSlice';
-import { setUserData } from '../Store/userSlice'; // Add this action to manage user data
+import { setRoomData, setLoading, setError, setEventCode } from '../Store/roomSlice';
+import { setUserData } from '../Store/userSlice';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import Capture from '../Components/Capture';
 import Album from '../Components/Album';
+import { fetchImages } from '../Store/albumSlice'; // Import fetchImages action
+import Appbar from '../Components/Appbar';
 
 const EventRoom = () => {
   const { eventCode } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { roomData, loading, error } = useSelector((state) => state.room);
-  const { userData } = useSelector((state) => state.user); // Select user data from the store
-
+  const { userData } = useSelector((state) => state.user);
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
- 
+
+  // Refresh images in the album
+  const refreshImages = () => {
+    dispatch(fetchImages(eventCode));  // Trigger fetchImages action to refresh the album
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (!token) {
       navigate('/');
       return;
     }
-    
 
     const fetchRoomAndUserData = async () => {
       dispatch(setLoading(true));
@@ -30,7 +35,6 @@ const EventRoom = () => {
         // Fetch room data
         const roomResponse = await fetch(`${apiUrl}/room/check-room/${eventCode}`);
         const roomData = await roomResponse.json();
-        
 
         if (roomResponse.status === 200) {
           dispatch(setRoomData(roomData.room));
@@ -39,7 +43,7 @@ const EventRoom = () => {
           dispatch(setError('Room not found'));
         }
 
-        // Fetch user data
+        // Fetch user data if token is valid
         const userResponse = await fetch(`${apiUrl}/user/user-data`, {
           method: 'GET',
           headers: {
@@ -49,9 +53,10 @@ const EventRoom = () => {
 
         if (userResponse.ok) {
           const userData = await userResponse.json();
-          dispatch(setUserData(userData.user)); // Save user data to the Redux store
+          dispatch(setUserData(userData.user));
         } else {
-          console.error('Failed to fetch user data');
+          console.error('Failed to fetch user data:', userResponse.status);
+          dispatch(setError('Failed to fetch user data'));
         }
       } catch (err) {
         console.error('Error fetching data:', err);
@@ -97,6 +102,14 @@ const EventRoom = () => {
   }
 
   return (
+    <Box>
+      <Box
+        sx={{
+          marginBottom: { xs: '90px', sm: '120px', md: '150px', lg: '180px' },
+        }}
+      >
+        <Appbar />
+      </Box>
     <Box
       sx={{
         display: 'flex',
@@ -111,7 +124,6 @@ const EventRoom = () => {
           <Typography variant="h4" gutterBottom color="primary">
             Event Room: {roomData.event_name}
           </Typography>
-          
         </Box>
       ) : (
         <Typography variant="body1" color="textSecondary">
@@ -128,12 +140,13 @@ const EventRoom = () => {
       )}
 
       <Box>
-      <Capture eventCode={eventCode} />
+        <Capture eventCode={eventCode} refreshImages={refreshImages} />
       </Box>
 
       <Box>
-      <Album eventCode={eventCode} />
+        <Album eventCode={eventCode} />
       </Box>
+    </Box>
     </Box>
   );
 };

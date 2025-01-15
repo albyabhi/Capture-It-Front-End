@@ -12,10 +12,12 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.0",
     "@mui/material": "^6.3.0",
     "@reduxjs/toolkit": "^2.5.0",
     "@zxing/library": "^0.21.3",
     "axios": "^1.7.9",
+    "jwt-decode": "^4.0.0",
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "react": "^18.0.0",
