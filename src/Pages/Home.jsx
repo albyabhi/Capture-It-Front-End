@@ -1,103 +1,67 @@
-import { useState } from 'react';
-import { TextField, Button, Box, Typography, Divider } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import Appbar from '../Components/Appbar';
+import RoomSetup from '../Components/RoomSetup';  // Import RoomSetup component
 import Recent_Rooms from '../Components/Recent_Rooms';
+
+import { Box, Grid } from '@mui/material'; // Import Grid from MUI
+import Caption from '../Components/Caption';
+import AboutSection from '../Components/AboutSection';
 
 const Home = () => {
   const [eventCode, setEventCode] = useState('');
-  const apiUrl = import.meta.env.VITE_BACKEND_URL;
-
-  const navigate = useNavigate();
-
-  const handleJoinEvent = async () => {
-    if (eventCode.trim() === '') {
-      alert('Please enter an event code!');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${apiUrl}/room/check-room/${eventCode}`);
-      const data = await response.json();
-
-      if (response.status === 200) {
-        console.log('Room found:', data.room);
-        navigate(`/user/${eventCode}`);
-      } else {
-        console.log('Room not found');
-        alert('Room not found, please check the event code.');
-      }
-    } catch (error) {
-      console.error('Error checking room:', error);
-      alert('An error occurred while checking the room.');
-    }
-  };
-
-  const handleCreateEvent = () => {
-    navigate('/create-room');
-  };
-
-  const handleQrCode = () => {
-    navigate('/QR-Scan');
-  };
 
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
         minHeight: '100vh',
         backgroundColor: '#EFFFFD',
-        padding: '16px',
+        padding: '8px',
       }}
     >
-      <Typography variant="h4" gutterBottom color="primary">
-        Join or Create Event Room
-      </Typography>
+      <Appbar />
 
-      <>
-        <TextField
-          label="Event Code"
-          variant="outlined"
-          value={eventCode}
-          onChange={(e) => setEventCode(e.target.value)}
-          fullWidth
-          sx={{ marginBottom: '16px', maxWidth: '400px' }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleJoinEvent}
-          sx={{ marginBottom: '16px', maxWidth: '400px' }}
-        >
-          Join Event Room
-        </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          fullWidth
-          onClick={handleQrCode}
-          sx={{ marginBottom: '16px', maxWidth: '400px' }}
-        >
-          Scan QR Code
-        </Button>
-        <Divider sx={{ margin: '16px 0', width: '100%', maxWidth: '400px' }}>
-          OR
-        </Divider>
-        <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          onClick={handleCreateEvent}
-          sx={{ maxWidth: '400px' }}
-        >
-          Create Event Room
-        </Button>
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: { xs: '90%', sm: '80%', md: '70%' },
+          padding: { xs: '8px', sm: '16px', md: '24px' },
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: { xs: '90px', sm: '75px', md: '100px', lg: '150px' },
+        }}
+      >
+        <Caption />
+      </Box>
 
-        <Recent_Rooms />
-      </>
+      {/* Use Grid for responsive layout */}
+      <Grid
+        container
+        spacing={2}  // Adjust spacing between items
+        sx={{
+          width: '100%',
+          maxWidth: { xs: '90%', sm: '80%', md: '70%' },
+          padding: { xs: '8px', sm: '16px', md: '24px' },
+          marginTop: { xs: '20px', sm: '15px', md: '20px' ,lg: '10px' },
+        }}
+      >
+        <Grid item xs={12} sm={6} md={6}> {/* RoomSetup in first half */}
+          <RoomSetup eventCode={eventCode} setEventCode={setEventCode} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={6}> {/* Recent_Rooms in second half */}
+          <Recent_Rooms />
+        </Grid>
+      </Grid>
+
+      <Box>
+        <AboutSection />
+      </Box>
+
     </Box>
   );
 };

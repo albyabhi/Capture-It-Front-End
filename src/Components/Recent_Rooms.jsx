@@ -50,7 +50,6 @@ const Recent_Rooms = () => {
   return (
     <Box
       sx={{
-        marginTop: '32px',
         maxWidth: '400px',
         width: '100%',
         textAlign: 'center',
