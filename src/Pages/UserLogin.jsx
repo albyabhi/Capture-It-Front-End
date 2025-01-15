@@ -53,13 +53,11 @@ const UserLogin = () => {
         const result = await response.json();
         console.log('Response from server:', result);
   
-        // Retrieve the token from the server response
         const token = result.token;
   
         // Log the token to the console
         console.log('JWT Token:', token);
   
-        // Optionally store the token in localStorage or a state management system
         localStorage.setItem('authToken', token);
   
         // Save the eventCode to recent-rooms in localStorage
