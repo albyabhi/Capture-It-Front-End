@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, List, ListItem, ListItemText } from '@mui/material';
 
-const Recent_Rooms = () => {
+const Recent_Rooms = ( {onRoomsFetched} ) => {
   const [roomDetails, setRoomDetails] = useState([]);
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
   const navigate = useNavigate();
@@ -35,6 +35,9 @@ const Recent_Rooms = () => {
 
         const details = (await Promise.all(roomDataPromises)).filter(Boolean);
         setRoomDetails(details);
+        if (onRoomsFetched) {
+          onRoomsFetched(details); 
+        }
       } catch (error) {
         console.error('Error fetching room details:', error);
       }

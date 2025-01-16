@@ -1,7 +1,13 @@
 import { Typography, Box } from '@mui/material';
-
+import { useSpring, animated } from '@react-spring/web';
 
 const Caption = () => {
+  const fadeIn = useSpring({
+    from: { opacity: 0, transform: 'translateY(-610px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+    config: { tension: 200, friction: 30 },
+  });
+
   return (
     <Box
       sx={{
@@ -11,24 +17,38 @@ const Caption = () => {
         justifyContent: 'center',
         backgroundColor: 'background.default',
         padding: '16px',
-        marginTop:'30px'
+        marginTop: '30px',
       }}
     >
-      <Typography variant="h1" gutterBottom color="primary">
-        Welcome to Capture-It
-      </Typography>
-      <Typography variant="body1" paragraph color="text.primary">
-        Capture your beautiful moments at any event.  be it a wedding, birthday party, or even a family get together.
-      </Typography>
-      <Typography variant="body1" paragraph color="text.primary">
-        Create your own personalized photo album with ease.
-      </Typography>
-      <Typography variant="body1" paragraph color="text.primary">
-        Use your own camera or upload photos from your device.
-      </Typography>
-      <Typography variant="body1" paragraph color="text.primary">
-        Make your memories unforgettable with us!
-      </Typography>
+      <animated.div style={fadeIn}>
+        <Typography variant="h1" gutterBottom color="primary">
+          Welcome to Capture-It
+        </Typography>
+      </animated.div>
+
+      <animated.div style={fadeIn}>
+        <Typography variant="body1" paragraph color="text.primary">
+          Capture your beautiful moments at any event. Be it a wedding, birthday party, or even a family get-together.
+        </Typography>
+      </animated.div>
+
+      <animated.div style={fadeIn}>
+        <Typography variant="body1" paragraph color="text.primary">
+          Create your own personalized photo album with ease.
+        </Typography>
+      </animated.div>
+
+      <animated.div style={fadeIn}>
+        <Typography variant="body1" paragraph color="text.primary">
+          Use your own camera or upload photos from your device.
+        </Typography>
+      </animated.div>
+
+      <animated.div style={fadeIn}>
+        <Typography variant="body1" paragraph color="text.primary">
+          Make your memories unforgettable with us!
+        </Typography>
+      </animated.div>
     </Box>
   );
 };

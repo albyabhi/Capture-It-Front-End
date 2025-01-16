@@ -9,10 +9,15 @@ import AboutSection from '../Components/AboutSection';
 
 const Home = () => {
   const [eventCode, setEventCode] = useState('');
+  const [recentRooms, setRecentRooms] = useState([]);
+  
+  
+  
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
 
+   
     if (token) {
       try {
         const decodedToken = jwtDecode(token); // Corrected function call
@@ -75,7 +80,7 @@ const Home = () => {
         </Grid>
         
         <Grid item xs={12} sm={6} md={6}>
-          <Recent_Rooms />
+        <Recent_Rooms  />
         </Grid>
       </Grid>
 

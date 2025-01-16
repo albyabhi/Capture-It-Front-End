@@ -55,7 +55,7 @@ const QrCodeScan = () => {
       <box>
         <Appbar />
       </box>
-    <Container maxWidth="sm" sx={{ textAlign: 'center', padding: '20px' }}>
+    <Container maxWidth="sm" sx={{ textAlign: 'center', padding: '20px' , marginTop : '120px', }}>
       
       
       
@@ -70,6 +70,7 @@ const QrCodeScan = () => {
           borderRadius: '15px',
           display: 'inline-block',
           margin: '30px auto',
+          
         }}
       >
         <video
