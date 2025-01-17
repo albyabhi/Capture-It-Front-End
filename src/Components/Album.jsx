@@ -11,15 +11,19 @@ import {
   ImageListItemBar,
 } from "@mui/material";
 import { useTheme, useMediaQuery } from "@mui/material";
+import ImageViewer from "./ImageViewer";
+
 
 const Album = ({ eventCode }) => {
   const dispatch = useDispatch();
   const { images, loading, error } = useSelector((state) => state.album);
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
-
+  const [openImageViewer, setOpenImageViewer] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState("");
   // Local state to store user data
   const [userNames, setUserNames] = useState({});
-
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
   // Fetch user data by user ID and update the state
   const fetchUserData = async (userId) => {
     try {
@@ -74,50 +78,75 @@ const Album = ({ eventCode }) => {
     return <CircularProgress />;
   }
 
-  if (error) {
+  
+  if (!loading && images.length === 0) {
     return (
-      <Typography variant="body1" color="error">
-        {error}
+      <Typography variant="body1" color="textSecondary">
+        No images found for this event.
       </Typography>
     );
   }
 
+  const handleImageClick = (imageUrl, index) => {
+    setSelectedImageUrl(imageUrl);
+    setCurrentIndex(index); // Set the current image index when clicked
+    setOpenImageViewer(true);
+  };
+
+  const handleCloseImageViewer = () => {
+    setOpenImageViewer(false);
+    setSelectedImageUrl("");
+  };
+
+  const handleImageChange = (newIndex) => {
+    setCurrentIndex(newIndex);
+    setSelectedImageUrl(images[newIndex]);
+  };
+
+
   return (
-    <Box sx={{ padding: "20px" }}>
-      {/* Display images in an ImageList */}
-      {images.length > 0 ? (
-        <ImageList
-          sx={{ width: "100%", height: "auto" }}
-          cols={getColumns()}
-          gap={10}
-        >
-          {images.map((image) => (
-            <ImageListItem key={image._id}>
-              <img
-                src={image.image_url}
-                alt={`Uploaded by user ${image.user._id}`}
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  objectFit: "cover",
-                  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Add shadow here
-                }}
-              />
-              <ImageListItemBar
-                title={`Captured by ${
-                  userNames[image.user._id] || "Loading..."
-                }`}
-                subtitle={new Date(image.timestamp).toLocaleString()}
-              />
-            </ImageListItem>
-          ))}
-        </ImageList>
-      ) : (
-        <Typography variant="body1" color="textSecondary">
-          No images found for this event.
-        </Typography>
-      )}
-    </Box>
+    <Box sx={{ padding: "20px", border: "1px solid #ccc", borderRadius: "8px" }}>
+    {/* Image list and rendering logic here */}
+    {images.length > 0 ? (
+      <ImageList sx={{ width: "100%", height: "auto" }} cols={getColumns()} gap={10}>
+        {images.map((image, index) => (
+  <ImageListItem
+    key={image._id}
+    sx={{
+      boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+      borderRadius: "8px",
+      overflow: "hidden",
+    }}
+  >
+    <img
+      src={image.image_url}
+      alt={`Uploaded by user ${image.user._id}`}
+      style={{ width: "100%", height: "auto", objectFit: "cover" }}
+      onClick={() => handleImageClick(image.image_url, index)} // Pass the index here
+    />
+    <ImageListItemBar
+      title={`Captured by ${userNames[image.user._id] || "Loading..."}`}
+      subtitle={new Date(image.timestamp).toLocaleString()}
+    />
+  </ImageListItem>
+))}
+      </ImageList>
+    ) : (
+      <Typography variant="body1" color="textSecondary">
+        No images found for this event.
+      </Typography>
+    )}
+
+    {/* Image Viewer Modal */}
+    <ImageViewer
+        open={openImageViewer}
+        imageUrl={selectedImageUrl}
+        images={images.map((img) => img.image_url)} // Pass the list of images for navigation
+        currentIndex={currentIndex}
+        onClose={handleCloseImageViewer}
+        onImageChange={handleImageChange}
+      />
+  </Box>
   );
 };
 
