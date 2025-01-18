@@ -14,9 +14,21 @@ const ImageViewer = ({ open, onClose, images }) => {
       sx={{
         margin: 0,
         overflow: "hidden",
+        "& .MuiPaper-root": {
+          backgroundColor: "transparent", // Make the dialog transparent
+          boxShadow: "none", // Remove shadow if necessary
+        },
       }}
     >
-      <DialogActions sx={{ position: "absolute", top: 0, right: 0, zIndex: 1 }}>
+      <DialogActions
+        sx={{
+          position: "absolute",
+          backgroundColor: "rgba(214, 195, 195, 0.8)",
+          top: 0,
+          right: 0,
+          zIndex: 9999, // Ensure the close button is on top
+        }}
+      >
         <IconButton color="inherit" onClick={onClose}>
           <CloseIcon />
         </IconButton>
@@ -31,6 +43,7 @@ const ImageViewer = ({ open, onClose, images }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.8)", // Black background for content with transparency
         }}
       >
         <Carousel

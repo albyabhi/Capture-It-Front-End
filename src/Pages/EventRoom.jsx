@@ -9,6 +9,7 @@ import Album from '../Components/Album';
 import { fetchImages } from '../Store/albumSlice'; // Import fetchImages action
 import Appbar from '../Components/Appbar';
 
+
 const EventRoom = () => {
   const { eventCode } = useParams();
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ const EventRoom = () => {
       {roomData ? (
         <Box sx={{ textAlign: 'center', maxWidth: '600px', width: '100%' }}>
           <Typography variant="h4" gutterBottom color="primary">
-            Event Room: {roomData.event_name}
+            {roomData.event_name}
           </Typography>
         </Box>
       ) : (
@@ -134,7 +135,7 @@ const EventRoom = () => {
       {userData && (
         <Box sx={{ textAlign: 'center', maxWidth: '600px', width: '100%', marginTop: '20px' }}>
           <Typography variant="h6" gutterBottom >
-            Welcome {userData.fullName}
+            hi {userData.fullName} uploads your images to {roomData.event_name} Album
           </Typography>
         </Box>
       )}
