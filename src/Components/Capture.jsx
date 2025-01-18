@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Box, Grid, Typography, Alert, IconButton } from "@mui/material";
+import { Box, Grid, Typography, Alert, IconButton, CircularProgress } from "@mui/material";
 import axios from "axios";
 import PropTypes from "prop-types";
 import ImageList from "@mui/material/ImageList";
@@ -18,6 +18,7 @@ const Capture = ({ eventCode, refreshImages }) => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); // New state to track save button progress
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("authToken");
@@ -41,18 +42,20 @@ const Capture = ({ eventCode, refreshImages }) => {
     }
   };
 
-  const openCamera = () => {
+  const openCamera = (e) => {
+    e.stopPropagation(); // Prevent the event from bubbling up
     fileInputRef.current?.click();
   };
 
-  const openFileSelector = () => {
+  const openFileSelector = (e) => {
+    e.stopPropagation(); // Prevent the event from bubbling up
     fileSelectRef.current?.click();
   };
 
   const sendImagesToBackend = async () => {
-    if (!photos.length || loading) return;
+    if (!photos.length || loading || isSaving) return; // Don't proceed if already uploading
 
-    setLoading(true);
+    setIsSaving(true); // Start saving process
     const formData = new FormData();
     photos.forEach((photo) => formData.append("images", photo.file));
     formData.append("eventCode", eventCode);
@@ -72,7 +75,7 @@ const Capture = ({ eventCode, refreshImages }) => {
       console.error("Failed to upload images", error);
       setUploadError("Failed to upload images, please try again.");
     } finally {
-      setLoading(false);
+      setIsSaving(false); // Stop saving process and hide the progress
     }
   };
 
@@ -99,8 +102,8 @@ const Capture = ({ eventCode, refreshImages }) => {
         </Grid>
 
         <Grid item xs={4}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <IconButton color="secondary" onClick={openFileSelector} sx={{ width: '60px', height: '60px' }}>
+          <Box onClick={openFileSelector} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <IconButton color="secondary" sx={{ width: '60px', height: '60px' }}>
               <img src={folderLogo} alt="folder" style={{ width: '100%' }} />
             </IconButton>
             <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} ref={fileSelectRef} multiple />
@@ -126,12 +129,12 @@ const Capture = ({ eventCode, refreshImages }) => {
           </ImageList>
 
           <Grid item xs={4}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <IconButton color="success" onClick={sendImagesToBackend} disabled={loading} sx={{ width: '60px', height: '60px' }}>
-                <img src={saveLogo} alt="save" style={{ width: '100%' }} />
+            <Box onClick={sendImagesToBackend} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <IconButton color="success" disabled={isSaving} sx={{ width: '60px', height: '60px' }}>
+                {isSaving ? <CircularProgress size={30} color="secondary" /> : <img src={saveLogo} alt="save" style={{ width: '100%' }} />}
               </IconButton>
               <Typography variant="caption" color="textSecondary" sx={{ marginTop: '8px' }}>
-                Save
+                {isSaving ? "Saving..." : "Save"}
               </Typography>
             </Box>
           </Grid>
