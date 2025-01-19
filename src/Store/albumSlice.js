@@ -1,4 +1,3 @@
-// src/redux/albumSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -10,7 +9,7 @@ export const fetchImages = createAsyncThunk(
     try {
       const response = await axios.get(`${apiUrl}/image/fetchImages/${eventCode}`);
       return response.data;
-    } catch  {
+    } catch {
       return rejectWithValue('Error fetching images');
     }
   }
@@ -18,27 +17,33 @@ export const fetchImages = createAsyncThunk(
 
 // Create slice
 const albumSlice = createSlice({
-    name: 'album',
-    initialState: {
-      images: [],
-      loading: false,
+  name: 'album',
+  initialState: {
+    images: [],
+    loading: false,
+    error: null,
+  },
+  reducers: {
+    clearImages: (state) => {
+      state.images = [];
     },
-    reducers: {},
-    extraReducers: (builder) => {
-      builder
-        .addCase(fetchImages.pending, (state) => {
-          state.loading = true;
-        })
-        .addCase(fetchImages.fulfilled, (state, action) => {
-          state.images = action.payload;
-          state.loading = false;
-        })
-        .addCase(fetchImages.rejected, (state, action) => {
-          state.loading = false;
-          // If you still need to store an error message, add it here
-          state.error = action.payload; // or any custom error handling you wish
-        });
-    },
-  });
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchImages.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchImages.fulfilled, (state, action) => {
+        state.images = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchImages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+export const { clearImages } = albumSlice.actions;
 
 export default albumSlice.reducer;

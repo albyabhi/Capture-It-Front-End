@@ -6,15 +6,25 @@ import Recent_Rooms from '../Components/Recent_Rooms';
 import { Box, Grid } from '@mui/material';
 import Caption from '../Components/Caption';
 import AboutSection from '../Components/AboutSection';
+import { clearImages } from '../Store/albumSlice';
+import { useSelector, useDispatch } from 'react-redux';
 
 const Home = () => {
   const [eventCode, setEventCode] = useState('');
   const [recentRooms, setRecentRooms] = useState([]);
-  
+  const images = useSelector((state) => state.album.images);
+  const dispatch = useDispatch();
   
   
 
   useEffect(() => {
+
+    if (images.length > 0) {
+      dispatch(clearImages());
+    }
+
+
+
     const token = localStorage.getItem('authToken');
 
    
