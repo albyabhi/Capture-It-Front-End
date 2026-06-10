@@ -1,5 +1,5 @@
-import { TextField, Button, Divider, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const RoomSetup = ({ eventCode, setEventCode }) => {
   const navigate = useNavigate();
@@ -13,13 +13,11 @@ const RoomSetup = ({ eventCode, setEventCode }) => {
 
     try {
       const response = await fetch(`${apiUrl}/room/check-room/${eventCode}`);
-      const data = await response.json();
+        await response.json();
 
-      if (response.status === 200) {
-        console.log('Room found:', data.room);
+        if (response.status === 200) {
         navigate(`/user/${eventCode}`);
       } else {
-        console.log('Room not found');
         alert('Room not found, please check the event code.');
       }
     } catch (error) {
@@ -37,62 +35,50 @@ const RoomSetup = ({ eventCode, setEventCode }) => {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#EFFFFD',
-        
-      }}
-    >
-      <Typography variant="h6" gutterBottom color="primary">
+    <div className="flex flex-col items-center justify-center bg-neu-bg">
+      <h3 className="text-lg font-medium text-neu-accent mb-6">
         Join or Create Event Room
-      </Typography>
+      </h3>
 
-      <>
-        <TextField
-          label="Event Code"
-          variant="outlined"
-          value={eventCode}
-          onChange={(e) => setEventCode(e.target.value)}
-          fullWidth
-          sx={{ marginBottom: '16px', maxWidth: '400px' }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleJoinEvent}
-          sx={{ marginBottom: '16px', maxWidth: '400px' }}
-        >
-          Join Event Room
-        </Button>
-        <Button
-          variant="outlined"
-          color="primary"
-          fullWidth
-          onClick={handleQrCode}
-          sx={{ marginBottom: '16px', maxWidth: '400px' }}
-        >
-          Scan QR Code
-        </Button>
-        <Divider sx={{ margin: '16px 0', width: '100%', maxWidth: '400px' }}>
-          OR
-        </Divider>
-        <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          onClick={handleCreateEvent}
-          sx={{ maxWidth: '400px' }}
-        >
-          Create Event Room
-        </Button>
-      </>
-    </Box>
+      <input
+        type="text"
+        placeholder="Event Code"
+        value={eventCode}
+        onChange={(e) => setEventCode(e.target.value)}
+        className="neu-input w-full max-w-[400px] px-4 py-3 text-neu-text placeholder-neu-text-muted/60 mb-4 focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
+      />
+
+      <button
+        onClick={handleJoinEvent}
+        className="neu-btn-accent w-full max-w-[400px] px-6 py-3 text-white font-medium text-base mb-4"
+      >
+        Join Event Room
+      </button>
+
+      <button
+        onClick={handleQrCode}
+        className="neu-btn-outline w-full max-w-[400px] px-6 py-3 font-medium text-base mb-4"
+      >
+        Scan QR Code
+      </button>
+
+      <div className="neu-divider-label w-full max-w-[400px] my-2">
+        <span>OR</span>
+      </div>
+
+      <button
+        onClick={handleCreateEvent}
+        className="neu-btn-accent w-full max-w-[400px] px-6 py-3 text-white font-medium text-base"
+      >
+        Create Event Room
+      </button>
+    </div>
   );
+};
+
+RoomSetup.propTypes = {
+  eventCode: PropTypes.string.isRequired,
+  setEventCode: PropTypes.func.isRequired,
 };
 
 export default RoomSetup;

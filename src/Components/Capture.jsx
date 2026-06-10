@@ -1,31 +1,24 @@
 import { useRef, useState } from "react";
-import { Box, Grid, Typography, Alert, IconButton, CircularProgress } from "@mui/material";
 import axios from "axios";
 import PropTypes from "prop-types";
-import ImageList from "@mui/material/ImageList";
-import ImageListItem from "@mui/material/ImageListItem";
-import ImageListItemBar from "@mui/material/ImageListItemBar";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import saveLogo from "../assets/save.png";
 import cameraLogo from "../assets/camera.png";
 import folderLogo from "../assets/folder.png";
+import saveLogo from "../assets/save.png";
 
 const Capture = ({ eventCode, refreshImages }) => {
   const [photos, setPhotos] = useState([]);
   const fileInputRef = useRef(null);
   const fileSelectRef = useRef(null);
   const [alertVisible, setAlertVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
-  const [isSaving, setIsSaving] = useState(false); // New state to track save button progress
+  const [isSaving, setIsSaving] = useState(false);
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
   const token = localStorage.getItem("authToken");
 
   if (!token) {
     console.log("No token found");
-    return null; // Or redirect to login
+    return null;
   }
 
   const handleImageChange = (e) => {
@@ -43,19 +36,19 @@ const Capture = ({ eventCode, refreshImages }) => {
   };
 
   const openCamera = (e) => {
-    e.stopPropagation(); // Prevent the event from bubbling up
+    e.stopPropagation();
     fileInputRef.current?.click();
   };
 
   const openFileSelector = (e) => {
-    e.stopPropagation(); // Prevent the event from bubbling up
+    e.stopPropagation();
     fileSelectRef.current?.click();
   };
 
   const sendImagesToBackend = async () => {
-    if (!photos.length || loading || isSaving) return; // Don't proceed if already uploading
+    if (!photos.length || isSaving) return;
 
-    setIsSaving(true); // Start saving process
+    setIsSaving(true);
     const formData = new FormData();
     photos.forEach((photo) => formData.append("images", photo.file));
     formData.append("eventCode", eventCode);
@@ -75,72 +68,114 @@ const Capture = ({ eventCode, refreshImages }) => {
       console.error("Failed to upload images", error);
       setUploadError("Failed to upload images, please try again.");
     } finally {
-      setIsSaving(false); // Stop saving process and hide the progress
+      setIsSaving(false);
     }
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "20px", gap: "16px" }}>
+    <div className="flex flex-col items-center justify-center px-5 py-5 gap-4 relative">
       {alertVisible && (
-        <Alert severity="success" sx={{ position: "absolute", top: 20, zIndex: 1, width: "30%" }}>
+        <div className="neu-alert-success absolute top-5 z-10 w-full max-w-md text-center">
           Image saved!
-        </Alert>
+        </div>
       )}
-      {uploadError && <Alert severity="error">{uploadError}</Alert>}
+      {uploadError && (
+        <div className="neu-alert-error w-full max-w-md text-center">
+          {uploadError}
+        </div>
+      )}
 
-      <Grid container spacing={4} justifyContent="center" alignItems="center">
-        <Grid item xs={4}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <IconButton color="primary" onClick={openCamera} sx={{ width: '60px', height: '60px' }}>
-              <img src={cameraLogo} alt="camera" style={{ width: '100%' }} />
-            </IconButton>
-            <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} ref={fileInputRef} multiple capture="camera" />
-            <Typography variant="caption" color="textSecondary" sx={{ marginTop: '8px' }}>
-              Camera
-            </Typography>
-          </Box>
-        </Grid>
+      <div className="grid grid-cols-2 gap-6 sm:gap-8 w-full max-w-md">
+        <div className="flex flex-col items-center">
+          <button
+            onClick={openCamera}
+            className="neu-icon-btn w-[60px] h-[60px]"
+            aria-label="Open camera"
+          >
+            <img src={cameraLogo} alt="" className="w-[30px] h-[30px]" />
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+            ref={fileInputRef}
+            multiple
+            capture="camera"
+          />
+          <span className="text-sm text-neu-text-muted mt-2">
+            Camera
+          </span>
+        </div>
 
-        <Grid item xs={4}>
-          <Box onClick={openFileSelector} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <IconButton color="secondary" sx={{ width: '60px', height: '60px' }}>
-              <img src={folderLogo} alt="folder" style={{ width: '100%' }} />
-            </IconButton>
-            <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} ref={fileSelectRef} multiple />
-            <Typography variant="caption" color="textSecondary" sx={{ marginTop: '8px' }}>
-              Choose from Gallery
-            </Typography>
-          </Box>
-        </Grid>
-      </Grid>
+        <div className="flex flex-col items-center">
+          <button
+            onClick={openFileSelector}
+            className="neu-icon-btn w-[60px] h-[60px]"
+            aria-label="Choose from gallery"
+          >
+            <img src={folderLogo} alt="" className="w-[30px] h-[30px]" />
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+            ref={fileSelectRef}
+            multiple
+          />
+          <span className="text-sm text-neu-text-muted mt-2">
+            Choose from Gallery
+          </span>
+        </div>
+      </div>
 
       {photos.length > 0 && (
-        <Box sx={{ width: "100%", maxWidth: "600px", marginTop: "20px" }}>
-          <Typography variant="h6" color="primary" sx={{ marginBottom: "16px" }}>
+        <div className="w-full max-w-[600px] mt-5">
+          <h4 className="text-base font-medium text-neu-accent mb-4">
             Captured Images
-          </Typography>
-          <ImageList sx={{ width: "100%", height: "auto" }} cols={3}>
+          </h4>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {photos.map((photo, index) => (
-              <ImageListItem key={index}>
-                <img src={URL.createObjectURL(photo.file)} alt={`Captured ${index + 1}`} loading="lazy" style={{ borderRadius: "8px" }} />
-                <ImageListItemBar title={photo.name} subtitle={`Size: ${Math.round(photo.size / 1024)} KB`} />
-              </ImageListItem>
+              <div key={index} className="neu-raised-sm overflow-hidden">
+                <img
+                  src={URL.createObjectURL(photo.file)}
+                  alt={`Captured photo ${index + 1}: ${photo.name}`}
+                  loading="lazy"
+                  className="w-full h-auto rounded-[8px]"
+                />
+                <div className="px-2 py-1">
+                  <p className="text-xs text-neu-text m-0 truncate">
+                    {photo.name}
+                  </p>
+                  <p className="text-xs text-neu-text-muted m-0">
+                    {Math.round(photo.size / 1024)} KB
+                  </p>
+                </div>
+              </div>
             ))}
-          </ImageList>
+          </div>
 
-          <Grid item xs={4}>
-            <Box onClick={sendImagesToBackend} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <IconButton color="success" disabled={isSaving} sx={{ width: '60px', height: '60px' }}>
-                {isSaving ? <CircularProgress size={30} color="secondary" /> : <img src={saveLogo} alt="save" style={{ width: '100%' }} />}
-              </IconButton>
-              <Typography variant="caption" color="textSecondary" sx={{ marginTop: '8px' }}>
-                {isSaving ? "Saving..." : "Save"}
-              </Typography>
-            </Box>
-          </Grid>
-        </Box>
+          <div className="flex flex-col items-center mt-4">
+            <button
+              onClick={sendImagesToBackend}
+              disabled={isSaving}
+              className="neu-icon-btn w-[60px] h-[60px] disabled:opacity-50"
+              aria-label={isSaving ? "Saving photos" : "Save all photos"}
+            >
+              {isSaving ? (
+                <div className="neu-spinner w-[30px] h-[30px] border-2"></div>
+              ) : (
+                <img src={saveLogo} alt="" className="w-[30px] h-[30px]" />
+              )}
+            </button>
+            <span className="text-sm text-neu-text-muted mt-2">
+              {isSaving ? "Saving..." : "Save"}
+            </span>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 };
 

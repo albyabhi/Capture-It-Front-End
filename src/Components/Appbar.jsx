@@ -1,5 +1,3 @@
-import Toolbar from '@mui/material/Toolbar';
-import Box from '@mui/material/Box';
 import logo from '../assets/capture-it-logo.png';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,53 +6,26 @@ const Appbar = () => {
 
   const handleHomeNav = () => {
     navigate('/');
-    
   };
 
   return (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1100,
-      }}
-    >
-      <Toolbar>
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Box
-            sx={{
-              width: {
-                xs: '200px',
-                sm: '250px',
-                md: '350px',
-                lg: '400px',
-              },
-              height: 'auto',
-              cursor: 'pointer',
-            }}
-            onClick={handleHomeNav} 
+    <>
+      <div className="fixed top-0 left-0 right-0 z-50 bg-neu-bg/80 backdrop-blur-sm">
+        <div className="flex items-center justify-center py-3 px-4">
+          <div
+            className="w-[200px] sm:w-[250px] md:w-[350px] lg:w-[400px] cursor-pointer"
+            onClick={handleHomeNav}
           >
             <img
               src={logo}
               alt="Capture It Logo"
-              style={{
-                width: '100%',
-                height: 'auto',
-              }}
+              className="w-full h-auto"
             />
-          </Box>
-        </Box>
-      </Toolbar>
-    </Box>
+          </div>
+        </div>
+      </div>
+      <div className="h-[72px]" />
+    </>
   );
 };
 

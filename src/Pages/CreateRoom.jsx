@@ -1,13 +1,4 @@
 import { useState } from "react";
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-  CircularProgress,
-  Snackbar,
-  LinearProgress,
-} from "@mui/material";
 import axios from "axios";
 import QRCode from "qrcode";
 import { useNavigate } from 'react-router-dom';
@@ -34,7 +25,7 @@ const CreateRoom = () => {
     }
 
     setLoading(true);
-    setProgress(10); // Start with an initial progress value
+    setProgress(10);
     try {
       const response = await axios.post(`${apiUrl}/room/create`, {
         eventName,
@@ -47,16 +38,16 @@ const CreateRoom = () => {
       setRoomCode(room.room_code);
 
       await generateQrCode(room.room_code);
-      setProgress(90); // Update progress as QR code is being generated
+      setProgress(90);
       setEnterButton(true);
       setSuccessMessage("Room created successfully!");
-      setProgress(100); // Mark as complete
+      setProgress(100);
     } catch (error) {
       console.error("Error creating room:", error);
       setErrorMessage("Failed to create the room. Please try again later.");
     } finally {
       setLoading(false);
-      setTimeout(() => setProgress(0), 1000); // Reset progress after some delay
+      setTimeout(() => setProgress(0), 1000);
     }
   };
 
@@ -85,7 +76,6 @@ const CreateRoom = () => {
 
   const handleRoomNav = () => {
     const token = localStorage.getItem("authToken");
-    console.log(token);
 
     const recentRooms = JSON.parse(localStorage.getItem('recent-rooms')) || [];
     if (!recentRooms.includes(roomCode)) {
@@ -101,115 +91,99 @@ const CreateRoom = () => {
   };
 
   return (
-    <Box>
-      <Box
-        sx={{
-          marginBottom: '20px'
-        }}
-      >
-        <Appbar />
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "100vh",
-          backgroundColor: "#EFFFFD",
-          padding: "16px",
-        }}
-      >
-        <Typography variant="h4" gutterBottom color="primary">
+    <div>
+      <Appbar />
+      <div className="flex flex-col items-center justify-center min-h-screen bg-neu-bg px-4">
+        <h2 className="text-2xl sm:text-3xl font-semibold text-neu-accent mb-6">
           Create Event Room
-        </Typography>
+        </h2>
 
-        {!roomData && ( // Only show the input fields if roomData is null
+        {successMessage && (
+          <div className="neu-alert-success w-full max-w-[400px] mb-4 text-center font-medium">
+            {successMessage}
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="neu-alert-error w-full max-w-[400px] mb-4 text-center font-medium">
+            {errorMessage}
+          </div>
+        )}
+
+        {!roomData && (
           <>
-            <TextField
-              label="Event Name"
-              variant="outlined"
+            <input
+              type="text"
+              placeholder="Event Name"
               value={eventName}
               onChange={(e) => setEventName(e.target.value)}
-              fullWidth
-              sx={{ marginBottom: "16px", maxWidth: "400px" }}
-              error={!!errorMessage}
-              helperText={errorMessage}
+              className="neu-input w-full max-w-[400px] px-4 py-3 text-neu-text placeholder-neu-text-muted/60 mb-4 focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
               aria-label="Event Name"
             />
-            <TextField
-              label="Room Owner Name"
-              variant="outlined"
+            <input
+              type="text"
+              placeholder="Room Owner Name"
               value={ownerName}
               onChange={(e) => setOwnerName(e.target.value)}
-              fullWidth
-              sx={{ marginBottom: "16px", maxWidth: "400px" }}
-              error={!!errorMessage}
-              helperText={errorMessage}
+              className="neu-input w-full max-w-[400px] px-4 py-3 text-neu-text placeholder-neu-text-muted/60 mb-4 focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
               aria-label="Room Owner Name"
             />
-            <Box sx={{ width: "100%", maxWidth: "400px", marginBottom: "16px" }}>
-              {loading && <LinearProgress variant="determinate" value={progress} />}
-            </Box>
 
-            <Button
-              variant="contained"
-              color="primary"
+            <div className="w-full max-w-[400px] mb-4">
+              {loading && (
+                <div className="neu-progress-track">
+                  <div
+                    className="neu-progress-bar"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              )}
+            </div>
+
+            <button
               onClick={handleCreateRoom}
-              fullWidth
-              sx={{ maxWidth: "400px", marginBottom: "16px" }}
               disabled={loading}
+              className="neu-btn-accent w-full max-w-[400px] px-6 py-3 text-white font-medium text-base mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating Room..." : "Create Room"}
-            </Button>
+            </button>
           </>
         )}
 
         {roomData && EnterButton && (
-          <Button
-            variant="contained"
-            color="primary"
+          <button
             onClick={handleRoomNav}
-            fullWidth
-            sx={{ maxWidth: "400px", marginBottom: "16px" }}
+            className="neu-btn-accent w-full max-w-[400px] px-6 py-3 text-white font-medium text-base mb-4"
           >
             Enter Room
-          </Button>
-        )}
-
-        {successMessage && (
-          <Snackbar
-            open={true}
-            autoHideDuration={3000}
-            message={successMessage}
-            onClose={() => setSuccessMessage("")}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-          />
+          </button>
         )}
 
         {roomData && roomCode && (
-          <Box sx={{ marginTop: "16px", textAlign: "center" }}>
-            <Typography variant="h6" gutterBottom>
+          <div className="mt-4 text-center">
+            <h4 className="text-lg font-medium text-neu-text mb-4">
               Room Code: {roomCode}
-            </Typography>
+            </h4>
             {qrCodeImage && (
               <img
                 src={qrCodeImage}
                 alt="QR Code"
-                style={{ marginTop: "16px", width: "512px", height: "512px" }}
+                className="mt-4 w-[256px] sm:w-[384px] md:w-[512px] h-auto neu-raised p-2"
               />
             )}
-            <Box sx={{ marginTop: "16px" }}>
-              <Button variant="contained" color="primary" onClick={saveQRCode}>
+            <div className="mt-4">
+              <button
+                onClick={saveQRCode}
+                className="neu-btn-accent px-6 py-3 text-white font-medium text-base"
+              >
                 Save QR
-              </Button>
-            </Box>
-          </Box>
+              </button>
+            </div>
+          </div>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
 export default CreateRoom;
-

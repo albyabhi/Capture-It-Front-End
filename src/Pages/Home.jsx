@@ -1,103 +1,178 @@
-import React, { useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // Corrected import for jwt-decode
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
+import { Camera, Images, Download } from 'lucide-react';
 import Appbar from '../Components/Appbar';
-import RoomSetup from '../Components/RoomSetup';
-import Recent_Rooms from '../Components/Recent_Rooms';
-import { Box, Grid } from '@mui/material';
-import Caption from '../Components/Caption';
-import AboutSection from '../Components/AboutSection';
+import Footer from '../Components/Footer';
 import { clearImages } from '../Store/albumSlice';
 import { useSelector, useDispatch } from 'react-redux';
+
+const FEATURES = [
+  {
+    icon: Camera,
+    title: 'Capture',
+    desc: 'Take photos from your phone camera or upload from your gallery.',
+  },
+  {
+    icon: Images,
+    title: 'Album',
+    desc: 'All event photos in one shared album, organized automatically.',
+  },
+  {
+    icon: Download,
+    title: 'Export',
+    desc: 'Download the complete album as a PDF to keep forever.',
+  },
+];
 
 const Home = () => {
   const [eventCode, setEventCode] = useState('');
   const [recentRooms, setRecentRooms] = useState([]);
   const images = useSelector((state) => state.album.images);
   const dispatch = useDispatch();
-  
-  
+  const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-
     if (images.length > 0) {
       dispatch(clearImages());
     }
 
-
-
     const token = localStorage.getItem('authToken');
-
-   
     if (token) {
       try {
-        const decodedToken = jwtDecode(token); // Corrected function call
-        const currentTime = Date.now() / 1000;
-
-        if (decodedToken.exp < currentTime) {
-          console.log('Token has expired');
+        const decodedToken = jwtDecode(token);
+        if (decodedToken.exp < Date.now() / 1000) {
           localStorage.removeItem('authToken');
-        } else {
-          console.log('Token is valid');
         }
-      } catch (error) {
-        console.error('Error decoding token:', error);
+      } catch {
         localStorage.removeItem('authToken');
       }
     }
-  }, []);
+
+    const saved = JSON.parse(localStorage.getItem('recent-rooms')) || [];
+    if (saved.length > 0) {
+      Promise.all(
+        saved.map(async (code) => {
+          try {
+            const res = await fetch(`${apiUrl}/room/check-room/${code}`);
+            if (res.ok) {
+              const data = await res.json();
+              return { eventCode: code, eventName: data.room.event_name };
+            }
+          } catch {
+            /* ignore */
+          }
+          return null;
+        })
+      ).then((results) => {
+        setRecentRooms(results.filter(Boolean).reverse().slice(0, 3));
+      });
+    }
+  }, [apiUrl, dispatch, images.length]);
+
+  const handleJoin = async () => {
+    if (eventCode.trim() === '') return;
+    try {
+      const res = await fetch(`${apiUrl}/room/check-room/${eventCode}`);
+      if (res.status === 200) {
+        navigate(`/user/${eventCode}`);
+      } else {
+        alert('Room not found. Check the event code and try again.');
+      }
+    } catch {
+      alert('Something went wrong. Please try again.');
+    }
+  };
+
+  const handleRecentClick = (code) => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      navigate(`/user/${code}`);
+    } else {
+      navigate(`/event-room/${code}`);
+    }
+  };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundColor: '#EFFFFD',
-        padding: '8px',
-      }}
-    >
+    <div className="min-h-screen bg-neu-bg flex flex-col">
       <Appbar />
 
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: { xs: '90%', sm: '80%', md: '70%' },
-          padding: { xs: '8px', sm: '16px', md: '24px' },
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: { xs: '90px', sm: '75px', md: '100px', lg: '150px' },
-        }}
-      >
-        <Caption />
-      </Box>
+      {/* Hero */}
+      <main className="flex-1 flex flex-col items-center justify-center px-4 pt-24 pb-12">
+       
 
-      <Grid
-        container
-        spacing={2}
-        sx={{
-          width: '100%',
-          maxWidth: { xs: '90%', sm: '80%', md: '70%' },
-          padding: { xs: '8px', sm: '16px', md: '24px' },
-          marginTop: { xs: '20px', sm: '15px', md: '20px', lg: '10px' },
-        }}
-      >
-        <Grid item xs={12} sm={6} md={6}>
-          <RoomSetup eventCode={eventCode} setEventCode={setEventCode} />
-        </Grid>
-        
-        <Grid item xs={12} sm={6} md={6}>
-        <Recent_Rooms  />
-        </Grid>
-      </Grid>
+        <p className="text-base sm:text-lg text-neu-text-muted text-center max-w-md mb-8 animate-neu-slide-1">
+          One event. One album. Everyone&apos;s photos.
+        </p>
 
-      <Box>
-        <AboutSection />
-      </Box>
-    </Box>
+        <div className="flex flex-col items-center gap-3 w-full max-w-[400px] animate-neu-slide-2">
+          <input
+            type="text"
+            placeholder="Enter Event Code"
+            value={eventCode}
+            onChange={(e) => setEventCode(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
+            className="neu-hero-input focus-visible:outline-none"
+          />
+          <button
+            onClick={handleJoin}
+            className="neu-btn-accent w-full max-w-[400px] px-6 py-3 text-white font-medium text-base"
+          >
+            Join Event
+          </button>
+          <button
+            onClick={() => navigate('/create-room')}
+            className="text-sm text-neu-accent font-medium mt-1 hover:underline"
+          >
+            Create a new event &rarr;
+          </button>
+        </div>
+      </main>
+
+      {/* Feature Strip */}
+      <section className="max-w-3xl w-full mx-auto px-4 pb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {FEATURES.map((f) => (
+            <div
+              key={f.title}
+              className="neu-raised-sm p-5 text-center flex flex-col items-center gap-2"
+            >
+              <f.icon size={24} className="text-neu-accent" strokeWidth={1.8} />
+              <h3 className="text-base font-semibold text-neu-text">{f.title}</h3>
+              <p className="text-sm text-neu-text-muted leading-relaxed">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Recent Rooms */}
+      {recentRooms.length > 0 && (
+        <section className="max-w-3xl w-full mx-auto px-4 pb-10">
+          <h3 className="text-sm font-medium text-neu-text-muted mb-3 text-center">
+            Recent Events
+          </h3>
+          <div className="flex flex-wrap justify-center gap-3">
+            {recentRooms.map((room) => (
+              <button
+                key={room.eventCode}
+                onClick={() => handleRecentClick(room.eventCode)}
+                className="neu-raised-sm px-4 py-3 text-left cursor-pointer neu-hover-lift min-w-[160px]"
+              >
+                <span className="block text-sm font-medium text-neu-text truncate">
+                  {room.eventName}
+                </span>
+                <span className="block text-xs text-neu-text-muted mt-0.5">
+                  {room.eventCode}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <Footer />
+    </div>
   );
 };
 

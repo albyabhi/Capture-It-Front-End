@@ -3,12 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRoomData, setLoading, setError, setEventCode } from '../Store/roomSlice';
 import { setUserData } from '../Store/userSlice';
-import { Box, Typography, CircularProgress } from '@mui/material';
 import Capture from '../Components/Capture';
 import Album from '../Components/Album';
-import { fetchImages } from '../Store/albumSlice'; // Import fetchImages action
+import { fetchImages } from '../Store/albumSlice';
 import Appbar from '../Components/Appbar';
-
 
 const EventRoom = () => {
   const { eventCode } = useParams();
@@ -18,9 +16,8 @@ const EventRoom = () => {
   const { userData } = useSelector((state) => state.user);
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
-  // Refresh images in the album
   const refreshImages = () => {
-    dispatch(fetchImages(eventCode));  // Trigger fetchImages action to refresh the album
+    dispatch(fetchImages(eventCode));
   };
 
   useEffect(() => {
@@ -33,7 +30,6 @@ const EventRoom = () => {
     const fetchRoomAndUserData = async () => {
       dispatch(setLoading(true));
       try {
-        // Fetch room data
         const roomResponse = await fetch(`${apiUrl}/room/check-room/${eventCode}`);
         const roomData = await roomResponse.json();
 
@@ -44,7 +40,6 @@ const EventRoom = () => {
           dispatch(setError('Room not found'));
         }
 
-        // Fetch user data if token is valid
         const userResponse = await fetch(`${apiUrl}/user/user-data`, {
           method: 'GET',
           headers: {
@@ -72,83 +67,55 @@ const EventRoom = () => {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          backgroundColor: '#EFFFFD',
-        }}
-      >
-        <CircularProgress color="primary" />
-      </Box>
+      <div className="flex items-center justify-center min-h-screen bg-neu-bg">
+        <div className="neu-spinner"></div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          backgroundColor: '#EFFFFD',
-        }}
-      >
-        <Typography variant="h6" color="error">{error}</Typography>
-      </Box>
+      <div className="flex items-center justify-center min-h-screen bg-neu-bg">
+        <div className="neu-card max-w-md w-full mx-4 text-center">
+          <h3 className="text-lg font-medium text-neu-error">{error}</h3>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box>
-      <Box
-        sx={{
-          marginBottom: { xs: '90px', sm: '120px', md: '150px', lg: '180px' },
-        }}
-      >
-        <Appbar />
-      </Box>
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-      }}
-    >
-      {roomData ? (
-        <Box sx={{ textAlign: 'center', maxWidth: '600px', width: '100%' }}>
-          <Typography variant="h4" gutterBottom color="primary">
-            {roomData.event_name}
-          </Typography>
-        </Box>
-      ) : (
-        <Typography variant="body1" color="textSecondary">
-          No room data available
-        </Typography>
-      )}
+    <div>
+      <Appbar />
+      <div className="flex flex-col items-center justify-center px-4 pt-2">
+        {roomData ? (
+          <div className="text-center max-w-[600px] w-full">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-neu-accent mb-4">
+              {roomData.event_name}
+            </h2>
+          </div>
+        ) : (
+          <p className="neu-empty-state">
+            No room data available
+          </p>
+        )}
 
-      {userData && (
-        <Box sx={{ textAlign: 'center', maxWidth: '600px', width: '100%', marginTop: '20px' }}>
-          <Typography variant="h6" gutterBottom >
-            hi {userData.fullName} uploads your images to {roomData.event_name} Album
-          </Typography>
-        </Box>
-      )}
+        {userData && (
+          <div className="text-center max-w-[600px] w-full mt-5">
+            <h4 className="text-base sm:text-lg font-medium text-neu-text line-clamp-2 break-words">
+              Hi {userData.fullName}, upload your images to {roomData?.event_name} Album
+            </h4>
+          </div>
+        )}
 
-      <Box>
-        <Capture eventCode={eventCode} refreshImages={refreshImages} />
-      </Box>
+        <div className="mt-6">
+          <Capture eventCode={eventCode} refreshImages={refreshImages} />
+        </div>
 
-      <Box>
-        <Album eventCode={eventCode} />
-      </Box>
-    </Box>
-    </Box>
+        <div className="mt-6 w-full max-w-4xl">
+          <Album eventCode={eventCode} />
+        </div>
+      </div>
+    </div>
   );
 };
 

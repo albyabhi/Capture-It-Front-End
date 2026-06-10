@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
+import PropTypes from "prop-types";
 
 const Recent_Rooms = ({ onRoomsFetched }) => {
   const [roomDetails, setRoomDetails] = useState([]);
@@ -40,9 +40,9 @@ const Recent_Rooms = ({ onRoomsFetched }) => {
         });
 
         const details = (await Promise.all(roomDataPromises))
-        .filter(Boolean)
-        .reverse() 
-        .slice(0, 3);
+          .filter(Boolean)
+          .reverse()
+          .slice(0, 3);
 
         setRoomDetails(details);
         if (onRoomsFetched) {
@@ -58,7 +58,6 @@ const Recent_Rooms = ({ onRoomsFetched }) => {
 
   const handleRoomClick = (eventCode) => {
     const token = localStorage.getItem("authToken");
-    console.log(token);
     if (!token || token === "") {
       navigate(`/user/${eventCode}`);
     } else {
@@ -67,48 +66,46 @@ const Recent_Rooms = ({ onRoomsFetched }) => {
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: "400px",
-        width: "100%",
-        textAlign: "center",
-      }}
-    >
-      <Typography variant="h6" color="primary" gutterBottom>
+    <div className="max-w-[400px] w-full text-center">
+      <h3 className="text-lg font-medium text-neu-accent mb-4">
         Recent logins
-      </Typography>
+      </h3>
       {roomDetails.length > 0 ? (
-        <List>
+        <ul className="list-none p-0 m-0 space-y-3">
           {roomDetails.map((room, index) => (
-            <ListItem
+            <li
               key={index}
-              button
+              role="button"
+              tabIndex={0}
               onClick={() => handleRoomClick(room.eventCode)}
-              sx={{
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                marginBottom: "8px",
-                backgroundColor: "#f9f9f9",
-                "&:hover": {
-                  backgroundColor: "#e0f7fa",
-                },
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleRoomClick(room.eventCode);
+                }
               }}
+              className="neu-raised-sm px-4 py-3 cursor-pointer neu-hover-lift text-left focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
             >
-              <ListItemText
-                primary={room.eventName}
-                secondary={`Code: ${room.eventCode}`}
-                sx={{ textAlign: "left" }}
-              />
-            </ListItem>
+              <span className="block text-neu-text font-medium">
+                {room.eventName}
+              </span>
+              <span className="block text-neu-text-muted text-sm mt-1">
+                Code: {room.eventCode}
+              </span>
+            </li>
           ))}
-        </List>
+        </ul>
       ) : (
-        <Typography variant="body1" color="textSecondary">
+        <p className="neu-empty-state">
           No recent rooms available.
-        </Typography>
+        </p>
       )}
-    </Box>
+    </div>
   );
+};
+
+Recent_Rooms.propTypes = {
+  onRoomsFetched: PropTypes.func,
 };
 
 export default Recent_Rooms;

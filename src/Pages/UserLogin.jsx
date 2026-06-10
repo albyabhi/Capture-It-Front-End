@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams ,  useNavigate } from 'react-router-dom';
-import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const UserLogin = () => {
   const { eventCode } = useParams();
@@ -39,7 +38,7 @@ const UserLogin = () => {
       alert('Please enter your full name!');
       return;
     }
-  
+
     try {
       const response = await fetch(`${apiUrl}/user/login`, {
         method: 'POST',
@@ -48,25 +47,18 @@ const UserLogin = () => {
         },
         body: JSON.stringify({ fullName, eventCode }),
       });
-  
+
       if (response.ok) {
         const result = await response.json();
-        console.log('Response from server:', result);
-  
         const token = result.token;
-  
-        // Log the token to the console
-        console.log('JWT Token:', token);
-  
         localStorage.setItem('authToken', token);
-  
-        // Save the eventCode to recent-rooms in localStorage
+
         const recentRooms = JSON.parse(localStorage.getItem('recent-rooms')) || [];
         if (!recentRooms.includes(eventCode)) {
           recentRooms.push(eventCode);
         }
         localStorage.setItem('recent-rooms', JSON.stringify(recentRooms));
-  
+
         navigate(`/event-room/${eventCode}`);
       } else {
         alert('Failed to login. Please try again.');
@@ -76,86 +68,50 @@ const UserLogin = () => {
       alert('An error occurred during login.');
     }
   };
-  
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-        }}
-      >
-        <CircularProgress color="primary" />
-      </Box>
+      <div className="flex items-center justify-center min-h-screen bg-neu-bg">
+        <div className="neu-spinner"></div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-        }}
-      >
-        <Typography variant="h6" color="error">{error}</Typography>
-      </Box>
+      <div className="flex items-center justify-center min-h-screen bg-neu-bg">
+        <div className="neu-card max-w-md w-full mx-4 text-center">
+          <h3 className="text-lg font-medium text-neu-error">{error}</h3>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        padding: '16px',
-      }}
-    >
+    <div className="flex flex-col items-center justify-center min-h-screen bg-neu-bg px-4">
       {roomData && (
-        <Box
-          sx={{
-            textAlign: 'center',
-            marginBottom: '16px',
-            maxWidth: '400px',
-            width: '100%',
-          }}
-        >
-          <Typography variant="h5" color="primary">
-            Event Name {roomData.event_name}
-          </Typography>
-          
-        </Box>
+        <div className="text-center mb-6 max-w-[400px] w-full">
+          <h2 className="text-xl sm:text-2xl font-semibold text-neu-accent">
+            Event Name: {roomData.event_name}
+          </h2>
+        </div>
       )}
 
-     
-
-      <TextField
-        label="Your Full Name"
-        variant="outlined"
+      <input
+        type="text"
+        placeholder="Your Full Name"
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
-        fullWidth
-        sx={{ marginBottom: '16px', maxWidth: '400px' }}
+        className="neu-input w-full max-w-[400px] px-4 py-3 text-neu-text placeholder-neu-text-muted/60 mb-4 focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
       />
 
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
+      <button
         onClick={handleLogin}
-        sx={{ maxWidth: '400px' }}
+        className="neu-btn-accent w-full max-w-[400px] px-6 py-3 text-white font-medium text-base"
       >
         Login
-      </Button>
-    </Box>
+      </button>
+    </div>
   );
 };
 
