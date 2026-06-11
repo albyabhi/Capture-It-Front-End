@@ -44,9 +44,15 @@ const Home = () => {
         const decodedToken = jwtDecode(token);
         if (decodedToken.exp < Date.now() / 1000) {
           localStorage.removeItem('authToken');
+          Object.keys(localStorage)
+            .filter((k) => k.startsWith('capture-it-session-'))
+            .forEach((k) => localStorage.removeItem(k));
         }
       } catch {
         localStorage.removeItem('authToken');
+        Object.keys(localStorage)
+          .filter((k) => k.startsWith('capture-it-session-'))
+          .forEach((k) => localStorage.removeItem(k));
       }
     }
 

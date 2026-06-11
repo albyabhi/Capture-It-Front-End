@@ -10,17 +10,28 @@ const QrCodeScan = () => {
 
   const handleRoomEnter = useCallback(() => {
     const token = localStorage.getItem("authToken");
-    const recentRooms = JSON.parse(localStorage.getItem('recent-rooms')) || [];
 
-    if (!recentRooms.includes(qrData)) {
-      recentRooms.push(qrData);
+    let roomCode = qrData;
+    try {
+      const url = new URL(qrData);
+      if (url.origin === window.location.origin) {
+        navigate(url.pathname);
+        return;
+      }
+    } catch {
+      // Not a URL — use as raw room code
+    }
+
+    const recentRooms = JSON.parse(localStorage.getItem('recent-rooms')) || [];
+    if (!recentRooms.includes(roomCode)) {
+      recentRooms.push(roomCode);
       localStorage.setItem('recent-rooms', JSON.stringify(recentRooms));
     }
 
     if (!token) {
-      navigate(`/user/${qrData}`);
+      navigate(`/user/${roomCode}`);
     } else {
-      navigate(`/event-room/${qrData}`);
+      navigate(`/event-room/${roomCode}`);
     }
   }, [qrData, navigate]);
 

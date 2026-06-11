@@ -37,7 +37,8 @@ const CreateRoom = () => {
       setRoomData(room);
       setRoomCode(room.room_code);
 
-      await generateQrCode(room.room_code);
+      const fullUrl = `${window.location.origin}/user/${room.room_code}`;
+      await generateQrCode(fullUrl);
       setProgress(90);
       setEnterButton(true);
       setSuccessMessage("Room created successfully!");
