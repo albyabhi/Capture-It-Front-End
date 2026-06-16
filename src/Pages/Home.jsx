@@ -183,3 +183,16 @@ const Home = () => {
 };
 
 export default Home;
+
+// ============================================
+// FILE: Home.jsx
+// PURPOSE: Landing page where users enter an event code or create a new event
+// HOW IT WORKS: 
+//   1. On load, clears any previous album images and checks if the user's login token is expired
+//   2. Loads "recent events" from browser storage and fetches their names from the server
+//   3. Shows a text input for entering an event code, validates it exists, then navigates to login
+//   4. Shows recent event cards that users can click to quickly rejoin past events
+// CONNECTS TO: Appbar (header), Footer (footer), Redux albumSlice (clear images), UserLogin/EventRoom pages
+// USER IMPACT: This is the first screen users see. They can type an event code to join,
+//   click "Create a new event" to start a new room, or click a recent event to quickly return.
+// ============================================

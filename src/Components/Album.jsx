@@ -132,3 +132,19 @@ Album.propTypes = {
 };
 
 export default Album;
+
+// ============================================
+// FILE: Album.jsx
+// PURPOSE: Masonry photo gallery that displays all uploaded event photos in a responsive grid
+// HOW IT WORKS:
+//   1. Fetches all images for the event from Redux store (via fetchImages thunk)
+//   2. Shows skeleton loading placeholders while images load
+//   3. Shows "No photos yet" empty state if there are no images
+//   4. Renders images in a CSS columns masonry layout (1-4 columns based on screen size)
+//   5. Each image shows the photo and the uploader's name below it
+//   6. Clicking an image opens a full-screen lightbox (ImageViewer component)
+//   7. "Download PDF" button opens a modal with PDF preview and download
+// CONNECTS TO: Redux albumSlice (fetchImages), ImageViewer (lightbox), PDFDownloadModal (PDF export)
+// USER IMPACT: This is the shared photo wall where users see all event photos together.
+//   They can click any photo to view it full-size and navigate between photos.
+// ============================================

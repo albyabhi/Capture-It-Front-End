@@ -30,3 +30,16 @@ const Appbar = () => {
 };
 
 export default Appbar;
+
+// ============================================
+// FILE: Appbar.jsx
+// PURPOSE: Fixed navigation bar at the top of most pages with the app logo
+// HOW IT WORKS:
+//   - Renders a fixed-position bar at the top with a blurred background
+//   - Shows the Capture-It logo, which is clickable and navigates to the home page
+//   - Uses responsive widths (200px on mobile, up to 400px on large screens)
+//   - Adds a 72px spacer div below to prevent content from hiding behind the fixed bar
+// CONNECTS TO: React Router (for navigation), capture-it-logo.png asset
+// USER IMPACT: Users always see the logo at the top. Clicking it takes them back to the home page.
+//   The blurred background lets page content show through for a modern look.
+// ============================================

@@ -120,3 +120,17 @@ const EventRoom = () => {
 };
 
 export default EventRoom;
+
+// ============================================
+// FILE: EventRoom.jsx
+// PURPOSE: Main event page where authenticated users upload and view photos
+// HOW IT WORKS:
+//   1. Checks for auth token - redirects to home if not logged in
+//   2. Fetches room data (event name) and user data from the server using JWT token
+//   3. Stores both in Redux state so other components can access them
+//   4. Renders Capture component (for uploading photos) and Album component (for viewing them)
+//   5. Shows loading spinner while fetching, error card if something goes wrong
+// CONNECTS TO: Appbar, Capture, Album, Redux roomSlice/userSlice/albumSlice, backend APIs
+// USER IMPACT: This is the main screen guests see after logging in. They can take/upload photos
+//   and see the shared album growing as everyone adds their photos.
+// ============================================

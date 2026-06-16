@@ -185,3 +185,18 @@ Capture.propTypes = {
 };
 
 export default Capture;
+
+// ============================================
+// FILE: Capture.jsx
+// PURPOSE: Camera/gallery upload component for taking or selecting photos to upload
+// HOW IT WORKS:
+//   1. Shows two icon buttons: Camera (opens device camera) and Gallery (opens file picker)
+//   2. When user selects/takes photos, they appear in a preview grid showing name and size
+//   3. User can select multiple photos before uploading
+//   4. "Save" button sends all selected photos to the server as FormData with JWT auth
+//   5. On success, clears the preview and refreshes the album to show new photos
+//   6. Shows success/error alerts briefly after upload
+// CONNECTS TO: backend /image/upload API, Album (refreshImages callback), camera/folder/save icons
+// USER IMPACT: Users tap the camera icon to take a photo or the folder icon to pick from gallery.
+//   After selecting photos, they tap Save to upload everything to the shared event album.
+// ============================================

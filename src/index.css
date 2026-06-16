@@ -527,3 +527,25 @@
     transition: none;
   }
 }
+
+/* ============================================
+FILE: index.css
+PURPOSE: Design system and global styles for the Neumorphic UI
+HOW IT WORKS:
+  - Imports Tailwind CSS v4 for utility classes
+  - Defines custom CSS properties (colors, radii, fonts) in the @theme block
+  - Creates a complete Neumorphic design system with 20+ utility classes:
+    * neumorphic surfaces: .neu-raised, .neu-raised-sm, .neu-pressed, .neu-flat
+    * buttons: .neu-btn, .neu-btn-accent, .neu-btn-outline, .neu-icon-btn
+    * inputs: .neu-input, .neu-hero-input
+    * feedback: .neu-alert-success, .neu-alert-error, .neu-spinner
+    * layout: .neu-card, .neu-divider, .neu-divider-label, .neu-inset
+    * effects: .neu-hover-lift, .neu-focus-ring, .neu-disabled
+    * gallery: .neu-masonry-item, .neu-empty-state
+    * PDF: .neu-pdf-overlay
+  - Includes keyframe animations: neu-spin, neu-fade-in, neu-slide-up
+  - Respects prefers-reduced-motion for accessibility
+CONNECTS TO: All components in the app (they use these CSS classes)
+USER IMPACT: Defines the app's visual identity - soft shadows, rounded corners, and
+  subtle depth effects that give the interface a modern, tactile feel.
+============================================ */

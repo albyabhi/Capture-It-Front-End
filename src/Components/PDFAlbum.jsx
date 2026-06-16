@@ -89,3 +89,17 @@ PDFAlbum.propTypes = {
 };
 
 export default PDFAlbum;
+
+// ============================================
+// FILE: PDFAlbum.jsx
+// PURPOSE: Defines the PDF document layout for exporting event photos as a downloadable PDF
+// HOW IT WORKS:
+//   1. Uses @react-pdf/renderer to create a PDF document structure
+//   2. Sets page size to landscape A4 (841.89 x 595.28 points)
+//   3. Splits images into pages of 6 photos each (3-column grid layout)
+//   4. Each photo shows the image and uploader's name as a caption below
+//   5. Adds event name header at top and page numbers at bottom
+// CONNECTS TO: PDFDownloadModal (renders this component), @react-pdf/renderer library
+// USER IMPACT: When users click "Download PDF," this defines how their event photos
+//   will look in the PDF - organized in a clean grid with names and page numbers.
+// ============================================

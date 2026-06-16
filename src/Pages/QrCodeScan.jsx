@@ -90,3 +90,17 @@ const QrCodeScan = () => {
 };
 
 export default QrCodeScan;
+
+// ============================================
+// FILE: QrCodeScan.jsx
+// PURPOSE: Camera-based QR code scanner that reads event codes from QR codes
+// HOW IT WORKS:
+//   1. Uses @zxing/library to access the device camera and continuously scan for QR codes
+//   2. When a QR code is detected, checks if it's a full URL or a raw room code
+//   3. If it's a URL from this app (same origin), navigates directly to that path
+//   4. If it's a raw code, navigates to /user/{code} for login
+//   5. Saves the scanned code to recent rooms in browser storage
+// CONNECTS TO: Appbar, @zxing/library (QR scanner), UserLogin/EventRoom pages, localStorage
+// USER IMPACT: Users point their camera at a QR code (from an event flyer or screen)
+//   and the app automatically detects the code and takes them to the right event.
+// ============================================

@@ -188,3 +188,17 @@ const CreateRoom = () => {
 };
 
 export default CreateRoom;
+
+// ============================================
+// FILE: CreateRoom.jsx
+// PURPOSE: Page where event organizers create a new room and get a QR code to share
+// HOW IT WORKS:
+//   1. User enters event name and owner name
+//   2. Sends POST request to backend to create a room (gets back a unique 6-character code)
+//   3. Generates a QR code image containing the full join URL (/user/{code})
+//   4. Displays the QR code and a download button so the organizer can share it
+//   5. "Enter Room" button navigates to the event (checks if user is already logged in)
+// CONNECTS TO: Appbar (header), backend /room/create API, QRCode library, EventRoom/UserLogin pages
+// USER IMPACT: Event hosts use this page to create their event. After creation, they get a QR code
+//   they can print or share so guests can scan it to join the event.
+// ============================================

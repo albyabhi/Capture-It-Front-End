@@ -126,3 +126,19 @@ ImageViewer.propTypes = {
 };
 
 export default ImageViewer;
+
+// ============================================
+// FILE: ImageViewer.jsx
+// PURPOSE: Full-screen lightbox for viewing photos one at a time with navigation
+// HOW IT WORKS:
+//   1. When opened, shows a dark blurred backdrop covering the entire screen
+//   2. Displays the current image in the center, fitting within the viewport
+//   3. Shows prev/next arrow buttons if there are multiple images
+//   4. Keyboard support: Escape closes, ArrowLeft/ArrowRight navigate
+//   5. Touch support: swipe left/right (50px threshold) to navigate
+//   6. Shows image counter ("1 / 5") at the bottom
+//   7. Locks body scroll when open, unlocks when closed
+// CONNECTS TO: Album (parent that opens/closes this), Lucide icons (X, ChevronLeft, ChevronRight)
+// USER IMPACT: Users can browse through all event photos in full-screen mode,
+//   like a slideshow. Works with both keyboard (desktop) and touch (mobile).
+// ============================================

@@ -17,3 +17,15 @@ const Footer = () => {
 };
 
 export default Footer;
+
+// ============================================
+// FILE: Footer.jsx
+// PURPOSE: Page footer showing logo, copyright, and tagline
+// HOW IT WORKS:
+//   - Renders a simple footer section at the bottom of the page
+//   - Displays the Capture-It logo (small, semi-transparent)
+//   - Shows the current year and "Capture-It" copyright text
+//   - Shows the tagline "Made for events that matter."
+// CONNECTS TO: capture-it-logo.png asset
+// USER IMPACT: Provides branding and copyright info at the bottom of the home page.
+// ============================================

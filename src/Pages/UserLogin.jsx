@@ -174,3 +174,18 @@ const UserLogin = () => {
 };
 
 export default UserLogin;
+
+// ============================================
+// FILE: UserLogin.jsx
+// PURPOSE: Guest login page where users enter their name to join an event
+// HOW IT WORKS:
+//   1. Fetches room data to confirm the event exists and show the event name
+//   2. Checks browser storage for a saved session (returning user)
+//   3. If session exists: shows "Continue as {name}" button for one-click rejoin
+//   4. If no session: shows a name input field for first-time login
+//   5. On login: sends POST to /user/login, saves JWT token and session locally
+//   6. "Not you?" button clears the saved session so a different user can log in
+// CONNECTS TO: backend /user/login and /room/check-room APIs, EventRoom page, browser localStorage
+// USER IMPACT: Guests arrive here after scanning a QR code. They type their name once,
+//   and next time they join the same event they can tap "Continue" to skip re-entering their name.
+// ============================================

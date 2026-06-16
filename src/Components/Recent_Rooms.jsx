@@ -109,3 +109,17 @@ Recent_Rooms.propTypes = {
 };
 
 export default Recent_Rooms;
+
+// ============================================
+// FILE: Recent_Rooms.jsx
+// PURPOSE: Reusable component that shows a list of recently visited event rooms
+// HOW IT WORKS:
+//   1. Reads the "recent-rooms" list from browser localStorage (array of event codes)
+//   2. For each code, fetches the room name from the server
+//   3. Shows up to 3 most recent rooms as clickable cards
+//   4. Clicking a room navigates to login (if not logged in) or event room (if logged in)
+//   5. Calls onRoomsFetched callback with the room details after loading
+// CONNECTS TO: backend /room/check-room API, localStorage, React Router, Home page
+// USER IMPACT: Users see their recently visited events as quick-access cards,
+//   so they can jump back into an event without typing the code again.
+// ============================================

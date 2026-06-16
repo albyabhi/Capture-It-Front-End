@@ -57,3 +57,17 @@ PDFDownloadModal.propTypes = {
 };
 
 export default PDFDownloadModal;
+
+// ============================================
+// FILE: PDFDownloadModal.jsx
+// PURPOSE: Full-screen modal that shows a PDF preview and download button
+// HOW IT WORKS:
+//   1. Opens as a full-screen overlay with a white modal box in the center
+//   2. Header shows "Album PDF Preview" title, download button, and close button
+//   3. Uses PDFViewer from @react-pdf/renderer to show a live preview of the PDF
+//   4. Download button uses PDFDownloadLink to generate and download the PDF file
+//   5. Clicking outside the modal (on the backdrop) closes it
+// CONNECTS TO: PDFAlbum (the PDF document being rendered), Album (opens this modal)
+// USER IMPACT: Users can preview exactly how their PDF will look before downloading it.
+//   They can scroll through pages in the preview and then click download to save it.
+// ============================================

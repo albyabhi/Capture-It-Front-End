@@ -82,3 +82,16 @@ RoomSetup.propTypes = {
 };
 
 export default RoomSetup;
+
+// ============================================
+// FILE: RoomSetup.jsx
+// PURPOSE: Reusable form component for joining or creating event rooms
+// HOW IT WORKS:
+//   1. Shows an input field for entering an event code
+//   2. "Join Event Room" button validates the code exists via API, then navigates to login
+//   3. "Scan QR Code" button navigates to the QR scanner page
+//   4. "Create Event Room" button (separated by an "OR" divider) navigates to room creation
+// CONNECTS TO: backend /room/check-room API, React Router, QrCodeScan/CreateRoom pages
+// USER IMPACT: Provides a central place for users to either join an existing event
+//   by typing a code, scan a QR code, or create a brand new event.
+// ============================================
