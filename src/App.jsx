@@ -1,20 +1,34 @@
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchMe } from './Store/authSlice';
 import CreateRoom from './Pages/CreateRoom';
 import Home from './Pages/Home';
 import EventRoom from './Pages/EventRoom';
 import QrCodeScan from './Pages/QrCodeScan';
 import UserLogin from './Pages/UserLogin';
+import Signup from './Pages/Signup';
+import Login from './Pages/Login';
+import Profile from './Pages/Profile';
+import ProtectedRoute from './Components/ProtectedRoute';
 import SchemaMarkup from './Components/SchemaMarkup';
 
-
-
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchMe());
+  }, [dispatch]);
+
   return (
     <Router>
-       <SchemaMarkup />
+      <SchemaMarkup />
       <Routes>
-        <Route path="/create-room" element={<CreateRoom />} />
         <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/create-room" element={<ProtectedRoute><CreateRoom /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/QR-Scan" element={<QrCodeScan />} />
         <Route path="/event-room/:eventCode" element={<EventRoom />} />
         <Route path="/user/:eventCode" element={<UserLogin />} />
@@ -24,17 +38,3 @@ function App() {
 }
 
 export default App;
-
-// ============================================
-// FILE: App.jsx
-// PURPOSE: Root component that sets up routing for the entire application
-// HOW IT WORKS: Uses React Router to map URL paths to page components.
-//   - "/" shows the Home page (landing)
-//   - "/create-room" shows the CreateRoom page (make new event)
-//   - "/QR-Scan" shows the QR code scanner page
-//   - "/event-room/:eventCode" shows the EventRoom (main event page)
-//   - "/user/:eventCode" shows the UserLogin page (guest login)
-//   Also renders SchemaMarkup for SEO on every page.
-// CONNECTS TO: Home, CreateRoom, EventRoom, QrCodeScan, UserLogin, SchemaMarkup
-// USER IMPACT: This file decides which page appears when a user visits any URL in the app.
-// ============================================

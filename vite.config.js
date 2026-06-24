@@ -9,7 +9,8 @@ export default defineConfig({
     proxy: {
       '/room': 'http://localhost:5000',
       '/user': 'http://localhost:5000',
-      '/image': 'http://localhost:5000'
+      '/image': 'http://localhost:5000',
+      '/auth': 'http://localhost:5000'
     }
   }
 })

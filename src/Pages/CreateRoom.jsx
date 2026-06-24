@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import QRCode from "qrcode";
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Appbar from "../Components/Appbar";
 
 const CreateRoom = () => {
@@ -17,20 +18,29 @@ const CreateRoom = () => {
   const [roomCode, setRoomCode] = useState(null);
   const [qrCodeImage, setQrCodeImage] = useState(null);
   const navigate = useNavigate();
+  const { account } = useSelector((state) => state.auth);
 
   const handleCreateRoom = async () => {
-    if (eventName.trim() === "" || ownerName.trim() === "") {
-      setErrorMessage("Please enter all required details.");
+    if (eventName.trim() === "") {
+      setErrorMessage("Please enter an event name.");
+      return;
+    }
+
+    const finalOwnerName = account?.username || ownerName;
+    if (!finalOwnerName || finalOwnerName.trim() === "") {
+      setErrorMessage("Please enter a room owner name.");
       return;
     }
 
     setLoading(true);
     setProgress(10);
     try {
-      const response = await axios.post(`${apiUrl}/room/create`, {
-        eventName,
-        ownerName,
-      });
+      const token = localStorage.getItem("authToken");
+      const response = await axios.post(
+        `${apiUrl}/room/create`,
+        { eventName, ownerName: finalOwnerName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setProgress(50);
 
       const room = response.data.room;
@@ -76,25 +86,18 @@ const CreateRoom = () => {
   };
 
   const handleRoomNav = () => {
-    const token = localStorage.getItem("authToken");
-
     const recentRooms = JSON.parse(localStorage.getItem('recent-rooms')) || [];
     if (!recentRooms.includes(roomCode)) {
       recentRooms.push(roomCode);
     }
     localStorage.setItem('recent-rooms', JSON.stringify(recentRooms));
-
-    if (!token || token === '') {
-      navigate(`/user/${roomCode}`);
-    } else {
-      navigate(`/event-room/${roomCode}`);
-    }
+    navigate(`/user/${roomCode}`);
   };
 
   return (
-    <div>
+    <div className="min-h-screen flex flex-col">
       <Appbar />
-      <div className="flex flex-col items-center justify-center min-h-screen bg-neu-bg px-4">
+      <div className="flex-1 flex flex-col items-center justify-center bg-neu-bg px-4">
         <h2 className="text-2xl sm:text-3xl font-semibold text-neu-accent mb-6">
           Create Event Room
         </h2>
@@ -121,14 +124,16 @@ const CreateRoom = () => {
               className="neu-input w-full max-w-[400px] px-4 py-3 text-neu-text placeholder-neu-text-muted/60 mb-4 focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
               aria-label="Event Name"
             />
-            <input
-              type="text"
-              placeholder="Room Owner Name"
-              value={ownerName}
-              onChange={(e) => setOwnerName(e.target.value)}
-              className="neu-input w-full max-w-[400px] px-4 py-3 text-neu-text placeholder-neu-text-muted/60 mb-4 focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
-              aria-label="Room Owner Name"
-            />
+            {!account && (
+              <input
+                type="text"
+                placeholder="Room Owner Name"
+                value={ownerName}
+                onChange={(e) => setOwnerName(e.target.value)}
+                className="neu-input w-full max-w-[400px] px-4 py-3 text-neu-text placeholder-neu-text-muted/60 mb-4 focus-visible:ring-2 focus-visible:ring-neu-accent/40 focus-visible:outline-none"
+                aria-label="Room Owner Name"
+              />
+            )}
 
             <div className="w-full max-w-[400px] mb-4">
               {loading && (
@@ -188,17 +193,3 @@ const CreateRoom = () => {
 };
 
 export default CreateRoom;
-
-// ============================================
-// FILE: CreateRoom.jsx
-// PURPOSE: Page where event organizers create a new room and get a QR code to share
-// HOW IT WORKS:
-//   1. User enters event name and owner name
-//   2. Sends POST request to backend to create a room (gets back a unique 6-character code)
-//   3. Generates a QR code image containing the full join URL (/user/{code})
-//   4. Displays the QR code and a download button so the organizer can share it
-//   5. "Enter Room" button navigates to the event (checks if user is already logged in)
-// CONNECTS TO: Appbar (header), backend /room/create API, QRCode library, EventRoom/UserLogin pages
-// USER IMPACT: Event hosts use this page to create their event. After creation, they get a QR code
-//   they can print or share so guests can scan it to join the event.
-// ============================================

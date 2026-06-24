@@ -9,7 +9,7 @@ const QrCodeScan = () => {
   const navigate = useNavigate();
 
   const handleRoomEnter = useCallback(() => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("guestToken");
 
     let roomCode = qrData;
     try {
@@ -62,7 +62,7 @@ const QrCodeScan = () => {
   return (
     <div>
       <Appbar />
-      <main className="max-w-lg mx-auto text-center px-5 pt-4">
+      <main className="max-w-lg mx-auto text-center px-5 pt-10">
         <h2 className="text-2xl sm:text-3xl font-semibold text-neu-accent mb-6">
           Scan QR Code
         </h2>

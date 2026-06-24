@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const SESSION_KEY_PREFIX = 'capture-it-session-';
 
 const UserLogin = () => {
   const { eventCode } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, account } = useSelector((state) => state.auth);
   const [fullName, setFullName] = useState('');
   const [roomData, setRoomData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sessionName, setSessionName] = useState(null);
   const [autoLogging, setAutoLogging] = useState(false);
-  const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -21,20 +23,28 @@ const UserLogin = () => {
         const response = await fetch(`${apiUrl}/room/check-room/${eventCode}`);
         const data = await response.json();
 
-        if (response.status === 200) {
-          setRoomData(data.room);
-
-          const savedSession = localStorage.getItem(`${SESSION_KEY_PREFIX}${eventCode}`);
-          if (savedSession) {
-            try {
-              const { fullName: savedName } = JSON.parse(savedSession);
-              setSessionName(savedName);
-            } catch {
-              localStorage.removeItem(`${SESSION_KEY_PREFIX}${eventCode}`);
-            }
-          }
-        } else {
+        if (response.status !== 200) {
           setError('Room not found');
+          setLoading(false);
+          return;
+        }
+
+        setRoomData(data.room);
+
+        if (isAuthenticated && account) {
+          setLoading(false);
+          navigate(`/event-room/${eventCode}`);
+          return;
+        }
+
+        const savedSession = localStorage.getItem(`${SESSION_KEY_PREFIX}${eventCode}`);
+        if (savedSession) {
+          try {
+            const { fullName: savedName } = JSON.parse(savedSession);
+            setSessionName(savedName);
+          } catch {
+            localStorage.removeItem(`${SESSION_KEY_PREFIX}${eventCode}`);
+          }
         }
       } catch (err) {
         console.error('Error fetching room data:', err);
@@ -45,7 +55,7 @@ const UserLogin = () => {
     };
 
     fetchRoomData();
-  }, [apiUrl, eventCode]);
+  }, [apiUrl, eventCode, isAuthenticated, account, navigate]);
 
   const doLogin = async (nameToLogin) => {
     const response = await fetch(`${apiUrl}/user/login`, {
@@ -57,7 +67,7 @@ const UserLogin = () => {
     if (!response.ok) throw new Error('Login failed');
 
     const result = await response.json();
-    localStorage.setItem('authToken', result.token);
+    localStorage.setItem('guestToken', result.token);
     localStorage.setItem(
       `${SESSION_KEY_PREFIX}${eventCode}`,
       JSON.stringify({ fullName: nameToLogin, token: result.token })

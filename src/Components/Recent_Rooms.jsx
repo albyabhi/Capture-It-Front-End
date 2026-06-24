@@ -57,7 +57,7 @@ const Recent_Rooms = ({ onRoomsFetched }) => {
   }, [apiUrl]);
 
   const handleRoomClick = (eventCode) => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem("guestToken");
     if (!token || token === "") {
       navigate(`/user/${eventCode}`);
     } else {

@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import cameraLogo from "../assets/camera.png";
 import folderLogo from "../assets/folder.png";
@@ -12,13 +13,28 @@ const Capture = ({ eventCode, refreshImages }) => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
-  const token = localStorage.getItem("authToken");
+  const guestToken = localStorage.getItem("guestToken");
+  const authToken = localStorage.getItem("authToken");
 
-  if (!token) {
-    console.log("No token found");
-    return null;
+  if (!guestToken) {
+    return (
+      <div className="flex flex-col items-center justify-center px-5 py-10 gap-4">
+        <p className="text-base text-neu-text-muted text-center">
+          {authToken
+            ? "Sign in as a guest to upload your photos"
+            : "Sign in to upload your photos"}
+        </p>
+        <button
+          onClick={() => navigate(`/user/${eventCode}`)}
+          className="neu-btn-accent px-6 py-3 text-white font-medium text-sm"
+        >
+          {authToken ? "Sign In as Guest" : "Sign In"}
+        </button>
+      </div>
+    );
   }
 
   const handleImageChange = (e) => {
@@ -57,7 +73,7 @@ const Capture = ({ eventCode, refreshImages }) => {
       await axios.post(`${apiUrl}/image/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${guestToken}`,
         },
       });
       setPhotos([]);

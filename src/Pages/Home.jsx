@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { Camera, Images, Download } from 'lucide-react';
+import { Camera, Images, Download, Calendar } from 'lucide-react';
 import Appbar from '../Components/Appbar';
 import Footer from '../Components/Footer';
 import { clearImages } from '../Store/albumSlice';
@@ -29,6 +29,7 @@ const Home = () => {
   const [eventCode, setEventCode] = useState('');
   const [recentRooms, setRecentRooms] = useState([]);
   const images = useSelector((state) => state.album.images);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_BACKEND_URL;
@@ -38,23 +39,20 @@ const Home = () => {
       dispatch(clearImages());
     }
 
-    const token = localStorage.getItem('authToken');
-    if (token) {
+    const clearExpiredToken = (key) => {
+      const token = localStorage.getItem(key);
+      if (!token) return;
       try {
         const decodedToken = jwtDecode(token);
         if (decodedToken.exp < Date.now() / 1000) {
-          localStorage.removeItem('authToken');
-          Object.keys(localStorage)
-            .filter((k) => k.startsWith('capture-it-session-'))
-            .forEach((k) => localStorage.removeItem(k));
+          localStorage.removeItem(key);
         }
       } catch {
-        localStorage.removeItem('authToken');
-        Object.keys(localStorage)
-          .filter((k) => k.startsWith('capture-it-session-'))
-          .forEach((k) => localStorage.removeItem(k));
+        localStorage.removeItem(key);
       }
-    }
+    };
+    clearExpiredToken('authToken');
+    clearExpiredToken('guestToken');
 
     const saved = JSON.parse(localStorage.getItem('recent-rooms')) || [];
     if (saved.length > 0) {
@@ -92,7 +90,7 @@ const Home = () => {
   };
 
   const handleRecentClick = (code) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('guestToken');
     if (!token) {
       navigate(`/user/${code}`);
     } else {
@@ -133,6 +131,15 @@ const Home = () => {
           >
             Create a new event &rarr;
           </button>
+          {isAuthenticated && (
+            <button
+              onClick={() => navigate('/profile?tab=events')}
+              className="flex items-center gap-2 text-sm text-neu-text-muted font-medium mt-2 hover:text-neu-accent transition-colors"
+            >
+              <Calendar size={14} />
+              My Events
+            </button>
+          )}
         </div>
       </main>
 
